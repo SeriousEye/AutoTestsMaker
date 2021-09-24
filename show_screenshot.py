@@ -1,6 +1,7 @@
 from PIL import Image, ImageTk
 from tkinter import Tk
 from tkinter.ttk import Frame, Label
+from . import screenshoter as ss
 import sys
  
  
@@ -8,8 +9,13 @@ class Example(Frame):
  
     def __init__(self):
         super().__init__()
+        self.make_screen()
         self.loadImage()
         self.initUI()
+
+    def make_screen(self):
+        screen = ss.ScreenShot()
+        screen.fullscreenshot()
  
     def loadImage(self):
         try:
@@ -34,13 +40,14 @@ class Example(Frame):
         self.master.geometry(("%dx%d") % (w, h))
  
  
-def main():
-    root = Tk()
-    ex = Example()
-    ex.setGeometry()
-    root.overrideredirect(True)
-    root.mainloop()
+# def main():
+#     root = Tk()
+#     ex = Example()
+#     ex.setGeometry()
+#     root.overrideredirect(True)
+
  
  
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
+    
