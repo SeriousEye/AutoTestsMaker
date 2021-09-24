@@ -9,3 +9,5 @@ wx, hy = img.size
 
 
 im1 = pyautogui.screenshot(f'temp_screen.png', region=(0, 0, wx, hy))
+
+#add test comment
