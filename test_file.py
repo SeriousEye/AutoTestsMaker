@@ -99,5 +99,6 @@ canvas.create_image(0, 0, image=gif1, anchor=NW)
 root.overrideredirect(True)
 
 # run it ...
+# test line
 
 mainloop()
