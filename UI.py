@@ -1,5 +1,5 @@
 from tkinter import *
-import show_screenshot
+import show_screenshot as ss
 
 
 class Example(Frame):
@@ -14,7 +14,7 @@ class Example(Frame):
         self.pack(fill=BOTH, expand=1)
 
     def buttons(self):
-        btn_screenshot = Button(self, text="Скриншот")
+        btn_screenshot = Button(self, text="Скриншот", command=ss.main)
         btn_screenshot.pack()
         
 def main():
