@@ -2,11 +2,12 @@ from PIL import Image, ImageTk
 from tkinter import Tk, Canvas, Toplevel
 from tkinter.ttk import Frame
 import screenshoter as ss
+import get_config as gc
  
  
 class OpenScreen(Frame):
  
-    def __init__(self, parent):
+    def __init__(self, parent, *kwargs):
         """ При объявлении класса, сразу последовательно вызываются методы. """
         Frame.__init__(self, parent)
         self.parent = parent
