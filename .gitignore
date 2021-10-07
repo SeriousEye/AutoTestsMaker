@@ -6,3 +6,4 @@ $ cat .gitignore
 # исключить файлы настроек и ссылки
 config.txt
 links.txt
+
