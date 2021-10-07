@@ -1,5 +1,6 @@
 from tkinter import *
-import show_screenshot
+import show_screenshot as ss
+import get_config as gc
 
 
 class Example(Frame):
@@ -14,8 +15,11 @@ class Example(Frame):
         self.pack(fill=BOTH, expand=1)
 
     def buttons(self):
-        btn_screenshot = Button(self, text="Скриншот")
+        btn_screenshot = Button(self, text="Скриншот", command=ss.main)
         btn_screenshot.pack()
+
+        btn_settings = Button(self, text="Настроить монитор", command=gc.getConfig().change_monitor_cfg())
+        btn_settings.pack()
         
 def main():
     root = Tk()
