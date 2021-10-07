@@ -7,3 +7,4 @@ $ cat .gitignore
 config.txt
 links.txt
 
+/__pycache__
