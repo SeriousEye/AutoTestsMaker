@@ -8,7 +8,7 @@ class ScreenShot():
     def __init__(self) -> None:
         pass
 
-    def fullscreenshot():
+    def fullscreenshot(self):
         ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
 
         img = ImageGrab.grab()
