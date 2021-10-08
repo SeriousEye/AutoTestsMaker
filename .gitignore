@@ -8,3 +8,6 @@ config.txt
 links.txt
 
 /__pycache__
+
+test_test.py
+test_to_del.py
