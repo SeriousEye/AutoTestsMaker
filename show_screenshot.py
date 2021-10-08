@@ -15,6 +15,8 @@ class OpenScreen(Frame):
         self.make_screen()
         self.image_size()
         self.initUI()
+        # self.paint()
+        # self.start_point()
 
     def make_screen(self):
         """ Создается скриншот."""
