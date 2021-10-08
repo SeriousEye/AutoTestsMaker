@@ -17,7 +17,6 @@ def paint( event ):
     global x1_old, y1_old, x_start, y_start
     # Co-ordinates.
     x1, y1 = event.x, event.y
-    # x1, y1 = event.x, event.y
      
     # Colour
     Colour = "black"
@@ -28,35 +27,40 @@ def paint( event ):
     
     # if x1 >= x1_old and y1 >= y1_old:
     #     x1_old, y1_old = x1, y1
-    lx["text"] = x1
-    ly["text"] = y1
+    # lx["text"] = x1
+    # ly["text"] = y1
+
+    w.create_rectangle(
+            x_start, y_start, x1, y1,
+            outline="white", fill="white"
+        )
+    x1, y1 = x1_old, y1_old
+
+    # if x1 <= x1_old:
+    #     w.create_rectangle(x1, y_start, x1_old, y1_old, outline="black", fill="black")
+    #     x1 = x1_old - x1
+    #     w.create_rectangle(
+    #             x_start, y_start, x1, y1,
+    #             outline="white", fill="white"
+    #         )
+
+    #     x1, y1 = x1_old, y1_old
 
 
-    if x1 <= x1_old:
-        w.create_rectangle(x1, y_start, x1_old, y1_old, outline="black", fill="black")
-        x1 = x1_old - x1
-        w.create_rectangle(
-                x_start, y_start, x1, y1,
-                outline="white", fill="white"
-            )
+    # elif y1 <= y1_old:
+    #     y1 = y1_old - y1
+    #     w.create_rectangle(
+    #             x_start, y_start, x1, y1,
+    #             outline="white", fill="white"
+    #         )
+    #     x1, y1 = x1_old, y1_old
 
-        x1, y1 = x1_old, y1_old
-
-
-    elif y1 <= y1_old:
-        y1 = y1_old - y1
-        w.create_rectangle(
-                x_start, y_start, x1, y1,
-                outline="white", fill="white"
-            )
-        x1, y1 = x1_old, y1_old
-
-    else:
-        w.create_rectangle(
-                x_start, y_start, x1, y1,
-                outline="white", fill="white"
-            )
-        x1, y1 = x1_old, y1_old
+    # else:
+    #     w.create_rectangle(
+    #             x_start, y_start, x1, y1,
+    #             outline="white", fill="white"
+    #         )
+    #     x1, y1 = x1_old, y1_old
     
 def start_point(event):
     global x_start, y_start
@@ -76,18 +80,18 @@ w.bind( "<B1-Motion>", paint )
 w.bind("<Button-1>", start_point)
  
 # create label.
-l = Label(root, text = "Double Click and Drag to draw." )
+# l = Label(root, text = "Double Click and Drag to draw." )
 
-btn = Button(root, text="Clear", command=clear_area)
+# btn = Button(root, text="Clear", command=clear_area)
 
-lx = Label(root, text="")
-ly = Label(root, text="")
+# lx = Label(root, text="")
+# ly = Label(root, text="")
 
-l.pack()
+# l.pack()
 w.pack()
-btn.pack()
-lx.pack()
-ly.pack()
+# btn.pack()
+# lx.pack()
+# ly.pack()
  
 mainloop()
 
