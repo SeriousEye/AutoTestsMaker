@@ -1,5 +1,3 @@
-
-
 class getConfig():
 
     def __init__(self):

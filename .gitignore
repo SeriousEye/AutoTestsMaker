@@ -1,0 +1,10 @@
+$ cat .gitignore
+
+# игнорировать тип файлов
+*.png
+
+# исключить файлы настроек и ссылки
+config.txt
+links.txt
+
+/__pycache__

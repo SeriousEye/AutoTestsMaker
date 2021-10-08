@@ -20,6 +20,7 @@ class Example(Frame):
 
         btn_settings = Button(self, text="Настроить монитор", command=gc.getConfig().change_monitor_cfg())
         btn_settings.pack()
+
         
 def main():
     root = Tk()
