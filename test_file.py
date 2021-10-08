@@ -1,104 +1,85 @@
-# from PIL import Image, ImageTk
-# from tkinter import Tk
-# from tkinter.ttk import Frame, Label
-# import sys
- 
- 
-# class Example(Frame):
- 
-#     def __init__(self):
-#         super().__init__()
-#         self.loadImage()
-#         self.initUI()
-
-
-#     # def loadImage(self):
-#     #     try:
-#     #         self.img = Image.open("temp_screen.png")
-#     #         self.img.show()
-#     #     except IOError:
-#     #         print("Возникла ошибка во время открытия изображения!")
-#     #         sys.exit(1)  
- 
-#     def loadImage(self):
-#         try:
-#             self.img = Image.open("tatras.jpg")
-#         except IOError:
-#             print("Возникла ошибка во время открытия изображения!")
-#             sys.exit(1)    
- 
-#     def initUI(self):
-#         self.master.title("Ярлык")
-#         tatras = ImageTk.PhotoImage(self.img)
-#         label = Label(self, image=tatras, state='normal')
- 
-#         # Сохраняем ссылку на объект открытого изображения.
-#         label.image = tatras
- 
-#         label.pack()
-#         self.pack()
- 
-#     def setGeometry(self):
-#         w, h = self.img.size
-#         self.master.geometry(("%dx%d") % (w, h))
- 
- 
-# def main():
-#     root = Tk()
-#     ex = Example()
-#     ex.setGeometry()
-#     root.overrideredirect(True)
-#     root.mainloop()
- 
- 
-# if __name__ == '__main__':
-#     main()
-
-# import tkinter
-# from tkinter.constants import ANCHOR, BOTH, YES
-# from PIL import Image, ImageTk
-# import sys
-
-# root = tkinter.Tk()
-# root.geometry("3840x1080-0+0")
-
-# # создаем рабочую область
-# frame = tkinter.Frame(root)
-# frame.pack(expand=YES, fill=BOTH)
-
-# #Добавим изображение
-# canvas = tkinter.Canvas(frame, highlightthickness=0)
-# image = Image.open("temp_screen.png")
-
-# photo = ImageTk.PhotoImage(image)
-# image = canvas.create_image(0, 0, image=photo)
-# canvas.pack()
-# root.overrideredirect(True)
-# root.mainloop()
-
 from tkinter import *
+from PIL import Image, ImageTk
 
-root = Tk()
-root.geometry("3840x1080-0+0")
+class OpenScreen(Frame):
 
-frame = Frame(root)
-frame.pack()
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self.parent = parent
+        self.imageSize()
+        # self.setGeometry()
+        self.initUI()
+        self.points()
 
-# create the canvas, size in pixels
-canvas = Canvas(frame, width=3840, height=1080, highlightthickness=0)
+    def points(self):
+        self.x_start, self.y_start = 0, 0
+        self.x1_old, self.y1_old = 0, 0
 
-# pack the canvas into a frame/form
-canvas.pack(expand=YES, fill=BOTH)
+    def start_points(self, event):
+        self.x_start, self.y_start = event.x, event.y
 
-# load the .gif image file
-gif1 = PhotoImage(file='temp_screen.png')
+    def paint(self, event):
+        x1, y1 = event.x, event.y
+        self.canvas.create_rectangle(
+            self.x_start, self.y_start, x1, y1,
+            outline="white"
+        )
+    # x1, y1 = x1_old, y1_old
 
-# put gif image on canvas
-# pic's upper left corner (NW) on the canvas is at x=50 y=10
-canvas.create_image(0, 0, image=gif1, anchor=NW)
-root.overrideredirect(True)
 
-# run it ...
-# test line
+    def imageSize(self):
+        try:
+            self.img = Image.open("temp_screen.png")
+            # self.fillimg = self.img.putalpha(125)
+            self.screen = ImageTk.PhotoImage(self.img)
+        except IOError:
+            print("Возникла ошибка во время открытия изображения!")
+        self.wx, self.hy = self.img.size
 
-mainloop()
+    def initUI(self):
+        # canvas = Canvas(self.parent, width=self.wx, height=self.hy)
+        self.canvas = Canvas(self.parent, width=self.wx, height=self.hy, highlightthickness=0)
+
+        image = self.canvas.create_image(0, 0, anchor="nw", image=self.screen)
+        self.canvas.grid(column=0, row=0)
+
+        self.canvas.bind( "<B1-Motion>", self.paint)
+        self.canvas.bind("<Button-1>", self.start_points)
+
+    def setGeometry(self):
+        self.parent.geometry(f"{self.wx}x{self.hy}")
+
+# Нужно чтобы два изображения открывались в двух слоях, затуманенный снизу. 
+# Получается, что каждый цикл идет рисование картинки в виде прямоугольника 
+# с отступами равными sarts_point
+
+def main():
+    root = Tk()
+    # root.geometry("3840x1080")
+    app = OpenScreen(root)
+    root.overrideredirect(True)
+    root.mainloop()
+    
+
+if __name__ == '__main__':
+    main()
+
+
+
+    # self.canvas.bind( "<B1-Motion>", self.paint)
+    # self.canvas.bind("<Button-1>", self.start_point)
+
+
+    # def paint(self, event):
+    #     self.x1_old, self.y1_old, self.x_start, self.y_start
+    #     self.x1, self.y1 = event.x, event.y
+
+    #     self.canvas.create_rectangle(
+    #             self.x_start, self.y_start, self.x1, self.y1,
+    #             outline="white", fill="white"
+    #     )
+    #     self.x1, self.y1 = self.x1_old, self.y1_old
+
+    # def start_point(self, event):
+    #     self.x_start, self.y_start
+    #     self.x_start, self.y_start = event.x, event.y
