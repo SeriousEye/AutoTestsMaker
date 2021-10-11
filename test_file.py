@@ -1,5 +1,6 @@
 from tkinter import *
 from PIL import Image, ImageTk
+import screenshoter as ss
 
 class OpenScreen(Frame):
 
@@ -22,15 +23,19 @@ class OpenScreen(Frame):
         x1, y1 = event.x, event.y
         self.canvas.create_rectangle(
             self.x_start, self.y_start, x1, y1,
-            outline="white"
+            dash=(3, 5)
         )
+
+        ss.ScreenShot().rectangle_screenshot(self.x_start, self.y_start, x1, y1)
+        self.alphaimg = Image.open("temp.png")
+        self.fillimg = self.alphaimg.putalpha(50)
     # x1, y1 = x1_old, y1_old
 
 
     def imageSize(self):
         try:
             self.img = Image.open("temp_screen.png")
-            # self.fillimg = self.img.putalpha(125)
+            self.fillimg = self.img.putalpha(125)
             self.screen = ImageTk.PhotoImage(self.img)
         except IOError:
             print("Возникла ошибка во время открытия изображения!")
@@ -48,6 +53,11 @@ class OpenScreen(Frame):
 
     def setGeometry(self):
         self.parent.geometry(f"{self.wx}x{self.hy}")
+
+
+# https://note.nkmk.me/en/python-pillow-putalpha/
+# https://pillow.readthedocs.io/en/stable/
+# https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/create_rectangle.html
 
 # Нужно чтобы два изображения открывались в двух слоях, затуманенный снизу. 
 # Получается, что каждый цикл идет рисование картинки в виде прямоугольника 
