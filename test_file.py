@@ -58,6 +58,7 @@ class OpenScreen(Frame):
 # https://note.nkmk.me/en/python-pillow-putalpha/
 # https://pillow.readthedocs.io/en/stable/
 # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/create_rectangle.html
+# https://pythonru.com/uroki/canvas-3-tkinter-20
 
 # Нужно чтобы два изображения открывались в двух слоях, затуманенный снизу. 
 # Получается, что каждый цикл идет рисование картинки в виде прямоугольника 
