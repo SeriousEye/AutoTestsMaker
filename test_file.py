@@ -76,21 +76,52 @@ if __name__ == '__main__':
     main()
 
 
+# ----------------------------------------------------
+# import tkinter as tk
 
-    # self.canvas.bind( "<B1-Motion>", self.paint)
-    # self.canvas.bind("<Button-1>", self.start_point)
+# class App(tk.Tk):
+#     def __init__(self):
+#         super().__init__()
+#         self.title("Перемещение элементов холста")
+
+#         self.canvas = tk.Canvas(self, bg="white")
+#         self.canvas.pack()
+#         self.start_x, self.start_y, self.x1, self.y1 = 0, 0, 0, 0
+#         self.update()
+#         self.width = self.canvas.winfo_width()
+#         self.height = self.canvas.winfo_height()
+#         self.pressed_keys = {}
+#         self.bind("<KeyPress>", self.key_press)
+#         self.bind("<KeyRelease>", self.key_release)
 
 
-    # def paint(self, event):
-    #     self.x1_old, self.y1_old, self.x_start, self.y_start
-    #     self.x1, self.y1 = event.x, event.y
+#         self.process_movements()
 
-    #     self.canvas.create_rectangle(
-    #             self.x_start, self.y_start, self.x1, self.y1,
-    #             outline="white", fill="white"
-    #     )
-    #     self.x1, self.y1 = self.x1_old, self.y1_old
+#     def key_press(self, event):
+#         self.pressed_keys[event.keysym] = True
 
-    # def start_point(self, event):
-    #     self.x_start, self.y_start
-    #     self.x_start, self.y_start = event.x, event.y
+#     def key_release(self, event):
+#         self.pressed_keys.pop(event.keysym, None)
+
+#     def paint(self, event):
+#         self.x1, self.y1 = event.x, event.y
+
+#     def start_points(self, event):
+#         self.start_x, self.start_y = event.x, event.y
+
+#     def process_movements(self):
+#         self.canvas.delete("aaa")
+#         self.canvas.bind("<B1-Motion>", self.paint)
+#         self.canvas.bind("<Button-1>", self.start_points)
+#         self.item = self.canvas.create_rectangle(self.start_x, self.start_y, self.x1, self.y1, tag="aaa",
+#                                                  fill="blue")
+#         self.canvas.move(self.item, 0, 0)
+
+        
+        
+
+#         self.after(10, self.process_movements)
+
+# if __name__ == "__main__":
+#     app = App()
+#     app.mainloop()
