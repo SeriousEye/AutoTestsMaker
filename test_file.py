@@ -7,30 +7,28 @@ class OpenScreen(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self.parent = parent
+        self.start_x, self.start_y, self.x1, self.y1 = 0, 0, 0, 0
         self.imageSize()
-        # self.setGeometry()
         self.initUI()
-        self.points()
+        self.process_movements()
 
-    def points(self):
-        self.x_start, self.y_start = 0, 0
-        self.x1_old, self.y1_old = 0, 0
-
-    def start_points(self, event):
-        self.x_start, self.y_start = event.x, event.y
+    def quit(self, arg1):
+        self.parent.destroy()
 
     def paint(self, event):
-        x1, y1 = event.x, event.y
-        self.canvas.create_rectangle(
-            self.x_start, self.y_start, x1, y1,
-            dash=(3, 5)
-        )
+        self.x1, self.y1 = event.x, event.y
 
-        ss.ScreenShot().rectangle_screenshot(self.x_start, self.y_start, x1, y1)
-        self.alphaimg = Image.open("temp.png")
-        self.fillimg = self.alphaimg.putalpha(50)
-    # x1, y1 = x1_old, y1_old
+    def start_points(self, event):
+        self.start_x, self.start_y = event.x, event.y
 
+    def process_movements(self):
+        self.canvas.delete("aaa")
+        self.canvas.focus_set()
+        self.canvas.bind("<B1-Motion>", self.paint)
+        self.canvas.bind("<Button-1>", self.start_points)
+        self.item = self.canvas.create_rectangle(self.start_x, self.start_y, self.x1, self.y1, tag="aaa",
+                                                 outline="black", dash=(1, 1))
+        self.after(10, self.process_movements)
 
     def imageSize(self):
         try:
@@ -42,14 +40,11 @@ class OpenScreen(Frame):
         self.wx, self.hy = self.img.size
 
     def initUI(self):
-        # canvas = Canvas(self.parent, width=self.wx, height=self.hy)
         self.canvas = Canvas(self.parent, width=self.wx, height=self.hy, highlightthickness=0)
-
         image = self.canvas.create_image(0, 0, anchor="nw", image=self.screen)
         self.canvas.grid(column=0, row=0)
+        self.canvas.bind("<Escape>", quit)
 
-        self.canvas.bind( "<B1-Motion>", self.paint)
-        self.canvas.bind("<Button-1>", self.start_points)
 
     def setGeometry(self):
         self.parent.geometry(f"{self.wx}x{self.hy}")

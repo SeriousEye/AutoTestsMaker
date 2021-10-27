@@ -1,5 +1,6 @@
 $ cat .gitignore
 
+
 # игнорировать тип файлов
 *.png
 
@@ -8,6 +9,7 @@ config.txt
 links.txt
 
 /__pycache__
+/lesson_18
 
 test_test.py
 test_to_del.py
