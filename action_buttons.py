@@ -57,9 +57,10 @@ class Counter():
 class Panel(Frame, KeepRefs):
     counter = 1
  
-    def __init__(self):
+    def __init__(self, value):
         super(Panel, self).__init__()
         self.count = Counter()
+        self.value = value
         self.initUI()
         
     def inc_count(self):
@@ -98,10 +99,8 @@ class Panel(Frame, KeepRefs):
         btn_print = Button(self, text="Print", command=self.print_inst)
         btn_print.pack(side=RIGHT, padx=5, expand=True)
 
-        lbl_count = Label(self, text=f"{self.counter}")
+        lbl_count = Label(self, text=f"{self.value}")
         lbl_count.pack(side=RIGHT, padx=5, expand=True)
-
-        self.inc_count()
 
     def print_inst(self):
         print(Panel.get_instances())

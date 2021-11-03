@@ -2,7 +2,6 @@ from tkinter import *
 import action_buttons as ab
 import gc
 
-# наработки по action_button
 
 class AddDel(Frame):
     new_list = []
@@ -16,10 +15,16 @@ class AddDel(Frame):
         
     def increment_count(self):
         self.a.inctrement_count
+        print(f"increment {self.a.counter}")
+
+    def add_panel(self):
+        print(self.a.counter)
+        a = ab.Panel(self.a.counter)
+        self.increment_count()
 
     def initUI(self):
         # self.pack(fill=BOTH, expand=True)
-        btn_add = Button(self.parent, text="Add buttons", command=ab.Panel)
+        btn_add = Button(self.parent, text="Add buttons", command=self.add_panel)
         btn_add.pack()
 
         btn_print = Button(self.parent, text="все объекты", command=self.all_obj)
