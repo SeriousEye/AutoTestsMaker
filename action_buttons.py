@@ -28,9 +28,10 @@
 # if __name__ == '__main__':
 #     main()
 
-from tkinter import Label, Tk, LEFT, BOTH, RAISED
+from tkinter import Label, Tk, LEFT, BOTH, RAISED, Canvas, END
 from tkinter.ttk import Frame, Button, Style, Combobox, Entry
 from collections import defaultdict
+from pyautogui import position, press
 import UI
 import weakref
 import actions
@@ -60,196 +61,454 @@ class Counter():
 
 class Panel(Frame, KeepRefs):
     act = ''
-    counter = 1
     tot_text = []
+    all_args = {}
+
+    all_commands = {
+        "ent_x": 1,
+        "ent_y": 1,
+        "duration": 1,
+        "button": 1,
+        "clicks": 1,
+        "interval": 1,
+        "write_text": 1,
+        "press_button": 1,
+        "wait_time": 1
+    }
+
+    action_dict = {
+        "Левая кнопка": 'left',
+        "Средняя кнопка": 'middle',
+        "Правая кнопка": 'right',
+        "1": 1,
+        "2": 2,
+        "3": 3
+    }
+
+    buttons = [
+        'enter', 'space', 'escape', ' ', '!', '"', '#', '$', '%', '&', "'", '(',
+        ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`',
+        'a', 'b', 'c', 'd', 'e','f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+        'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
+        'accept', 'add', 'alt', 'altleft', 'altright', 'apps', 'backspace',
+        'browserback', 'browserfavorites', 'browserforward', 'browserhome',
+        'browserrefresh', 'browsersearch', 'browserstop', 'capslock', 'clear',
+        'convert', 'ctrl', 'ctrlleft', 'ctrlright', 'decimal', 'del', 'delete',
+        'divide', 'down', 'end', 'esc', 'execute', 'f1', 'f10',
+        'f11', 'f12', 'f13', 'f14', 'f15', 'f16', 'f17', 'f18', 'f19', 'f2', 'f20',
+        'f21', 'f22', 'f23', 'f24', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9',
+        'final', 'fn', 'hanguel', 'hangul', 'hanja', 'help', 'home', 'insert', 'junja',
+        'kana', 'kanji', 'launchapp1', 'launchapp2', 'launchmail',
+        'launchmediaselect', 'left', 'modechange', 'multiply', 'nexttrack',
+        'nonconvert', 'num0', 'num1', 'num2', 'num3', 'num4', 'num5', 'num6',
+        'num7', 'num8', 'num9', 'numlock', 'pagedown', 'pageup', 'pause', 'pgdn',
+        'pgup', 'playpause', 'prevtrack', 'print', 'printscreen', 'prntscrn',
+        'prtsc', 'prtscr', 'return', 'right', 'scrolllock', 'select', 'separator',
+        'shift', 'shiftleft', 'shiftright', 'sleep', 'stop', 'subtract', 'tab',
+        'up', 'volumedown', 'volumemute', 'volumeup', 'win', 'winleft', 'winright', 'yen',
+        'command', 'option', 'optionleft', 'optionright'
+    ]
+    
  
     def __init__(self):
         super(Panel, self).__init__()
         # self.count = Counter().counter
         # print(self.count)
         # self.value = value
+        self.state_delete = 0
+        self.x = None
+        self.y = None
+        self.duration = 0
+        self.button = None
+        self.clicks = None
+        self.interval = 0
+        self.press_button = "enter"
+        self.write_text = ""
+        self.wait_time = 1
         self.initUI()
-
+        self.bind("<KeyPress>", self.insert_coords)
         
     def inc_count(self):
         self.count.inctrement_count()
     
-    # def but(self):
-    #     self.btn_create = Button(self.parent, text="Добавить", command=self.initUI)
-    #     self.btn_create.pack()
-
-    # def print_id(self, visible=False):
-    #     if visible:
-    #         print("")
-    #     else:
-    #         print(f"I'm object id: {id(self)}")
     def start_text(self):
         self.tot_text.append(actions.Actions().turn_on_lib())
 
     def add_action(self):
         text = self.combo_action.get()
-        # print(f"text - {text}")
-        text = actions.Actions().all_actions[text]
+        # text = actions.Actions().all_actions[text]
         return text
+
+    def delete_panel(self):
+        """Удаление текущей панели."""
+        self.state_delete = 0
+        self.destroy()
 
     def get_action(self):
         text = self.combo_action.get()
-        action_text = actions.Actions().all_actions[text]
-        return action_text
+        act  = actions.Actions()
+        # action_text = actions.Actions().all_actions[text]
+        self.get_values()
+        if text == "Переместить курсор":
+            return act.move_mouse(x=self.x, y=self.y, duration=self.duration)
+        elif text == "Перетащить мышью":
+            return act.drag_mouse(x=self.x, y=self.y, duration=self.duration, button=self.button)
+        elif text == "Клик мыши":
+            return act.click_mouse(x=self.x, y=self.y, button=self.button, clicks=self.clicks, interval=self.interval)
+        elif text == "Двойной клик":
+            return act.doubleclick_mouse(x=self.x, y=self.y, button=self.button, interval=self.interval)
+        elif text == "Ввести текст":
+            return act.write_text(text=self.write_text, interval=self.interval)
+        elif text == "Нажать клавишу":
+            return act.press_button(name_button=self.press_button)
+        elif text == "Ждать":
+            return act.wait_time(wait=self.wait_time)
+        else:
+            pass
 
-    def no_text(self):
-        self.tot_text = "блок удален"
-        
-    def instance_id(self):
-        return id(self)
+    def text_to_value(self, dict_value):
+        action_list = ["Левая кнопка", "Средняя кнопка", "Правая кнопка", "1", "2", "3"]
+        for action in action_list:
+            if action == dict_value and action not in "0123456789":
+                return self.action_dict[action]
+            elif action in "0123456789":
+                return self.action_dict[action]
 
-    def return_values(self):
-        # self.print_id(visible=True)
-        self.no_text()
-        self.destroy()
+    def get_values(self):
+        """Забираются значения из полей, комбобоксов и др."""
+        self.x = self.ent_x.get()
+        self.y = self.ent_y.get()
+        self.duration = self.ent_duration.get()
+        self.button = self.text_to_value(self.combo_buttons.get())
+        self.clicks = self.combo_clicks.get()
+        self.interval = self.ent_interval.get()
+        self.write_text = self.ent_write_text.get()
+        self.press_button = self.combo_press_button.get()
+        self.wait_time = self.ent_wait_time.get()
 
-    # def panel_standart(self):
-    #     self.pack(fill=BOTH, expand=True)
- 
-    #     lbl_action = Label(self, text="Выберите действие")
-    #     lbl_action.pack(side=LEFT, padx=1, expand=True)
+    def set_command(self, x, y, duration, button, clicks, interval, write_text, button_press, wait_time):
+        """
+        Нужно добавлять значение для атрибутов в виде кортежа (a, b)
+        где a - это ключ словаря all_commands, b - значение 0 или 1,
+        т.е. включено или выключено        
+        """
 
-    #     self.combo_action = Combobox(self)
-    #     self.combo_action['values'] = [act for act in actions.Actions().all_actions]
-    #     self.combo_action.current(0)
-    #     self.combo_action.pack(side=LEFT, padx=5, expand=True)
+        tot_list = [x, y, duration, button, clicks, interval, write_text, button_press, wait_time]
+        for elem in tot_list:
+            self.all_commands[elem[0]] = elem[1]
 
-    #     btn_bed_result = Button(self, text="Фактический результат")
-    #     btn_bed_result.pack(side=LEFT, padx=5, expand=True)
+    def get_coord(self):
+        """Возвращает координаты курсора мыши."""
+        x, y = position()
+        return x, y
 
-    #     btn_good_result = Button(self, text="Ожидаемый результат")
-    #     btn_good_result.pack(side=LEFT, padx=5, expand=True)
+    def insert_coords(self, arg):
+        """Помещаются координаты курсора в поля x и y"""
+        self.ent_x.delete(0, END)
+        self.ent_y.delete(0, END)
+        x, y = self.get_coord()
+        self.ent_x.insert(0, x)
+        self.ent_y.insert(0, y)
 
-    #     btn_del = Button(self, text="Удаляшечки", command=self.return_values)
-    #     btn_del.pack(side=LEFT, padx=5, expand=True)
+    def panel_x(self, value):
+        if value:
+            self.lbl_x.pack(side=LEFT)
+            self.ent_x.pack(side=LEFT, padx=2)
+        else:
+            self.lbl_x.pack_forget()
+            self.ent_x.pack_forget()
 
-    #     btn_print = Button(self, text="Print", command=self.get_action)
-    #     btn_print.pack(side=LEFT, padx=5, expand=True)
+    def panel_y(self, value):
+        if value:
+            self.lbl_y.pack(side=LEFT)
+            self.ent_y.pack(side=LEFT, padx=2)
+        else:
+            self.lbl_y.pack_forget()
+            self.ent_y.pack_forget()
 
+    def panel_duration(self, value):
+        if value:
+            self.lbl_duration.pack(side=LEFT)
+            self.ent_duration.pack(side=LEFT, padx=2)
+        else:
+            self.lbl_duration.pack_forget()
+            self.ent_duration.pack_forget()
 
-    def panel_three(self, action):
-        self.pack(fill=BOTH, expand=True)
+    def panel_button(self, value):
+        if value:
+            self.combo_buttons.pack(side=LEFT)
+            self.combo_buttons.pack(side=LEFT, padx=2)
+        else:
+            self.combo_buttons.pack_forget()
+            self.combo_buttons.pack_forget()
+    
+    def panel_clicks(self, value):
+        if value:
+            self.combo_clicks.pack(side=LEFT)
+            self.combo_clicks.pack(side=LEFT, padx=2)
+        else:
+            self.combo_clicks.pack_forget()
+            self.combo_clicks.pack_forget()
+    
+    def panel_interval(self, value):
+        if value:
+            self.lbl_interval.pack(side=LEFT)
+            self.ent_interval.pack(side=LEFT, padx=2)
+        else:
+            self.lbl_interval.pack_forget()
+            self.ent_interval.pack_forget()
 
-        lbl_action = Label(self, text="Выберите действие")
-        lbl_action.pack(side=LEFT, padx=1, expand=True)
+    def panel_w_text(self, value):
+        if value:
+            self.ent_write_text.pack(side=LEFT, padx=2)
+        else:
+            self.ent_write_text.pack_forget()
 
-        self.combo_action = Combobox(self)
-        self.combo_action['values'] = action
-        self.combo_action.current(0)
-        self.combo_action.pack(side=LEFT, padx=5, expand=True)
+    def panel_p_button(self, value):
+        if value:
+            self.lbl_press.pack(side=LEFT)
+            self.combo_press_button.pack(side=LEFT, padx=2)
+        else:
+            self.lbl_press.pack_forget()
+            self.combo_press_button.pack_forget()
 
-        lbl_x = Label(self, text="x:")
-        lbl_x.pack(side=LEFT)
-        ent_x = Entry(self, width=4)
-        ent_x.pack(side=LEFT, padx=2)
+    def panel_w_time(self, value):
+        if value:
+            self.lbl_wait_time.pack(side=LEFT)
+            self.ent_wait_time.pack(side=LEFT, padx=5)
+        else:
+            self.lbl_wait_time.pack_forget()
+            self.ent_wait_time.pack_forget()           
 
-        lbl_y = Label(self, text="y:")
-        lbl_y.pack(side=LEFT)
-        ent_y = Entry(self, width=4)
-        ent_y.pack(side=LEFT, padx=2)
+    def on_off(self):
+        """Включает или выключает виджеты в соответствии с параметрами словаря all_commands"""
 
-        lbl_duration = Label(self, text="Задержка")
-        lbl_duration.pack(side=LEFT)
-        ent_duration = Entry(self, width=2)
-        ent_duration.pack(side=LEFT)
+        self.lbl_action.pack()
+        self.combo_action.pack()
+        self.btn_refresh.pack()
+        for command in self.all_commands:
+            if command == "ent_x":
+                self.panel_x(self.all_commands[command])
+            elif command == "ent_y":
+                self.panel_y(self.all_commands[command])
+            elif command == "duration":
+                self.panel_duration(self.all_commands[command])
+            elif command == "button":
+                self.panel_button(self.all_commands[command])
+            elif command == "clicks":
+                self.panel_clicks(self.all_commands[command])
+            elif command == "interval":
+                self.panel_interval(self.all_commands[command])
+            elif command == "write_text":
+                self.panel_w_text(self.all_commands[command])
+            elif command == "press_button":
+                self.panel_p_button(self.all_commands[command])
+            elif command == "wait_time":
+                self.panel_w_time(self.all_commands[command])
 
-    def panel_four(self, action):
-        self.pack(fill=BOTH, expand=True)
+    def show_panel_widgets(self):
+        self.set_command(
+            x=("ent_x", 1),
+            y=("ent_y", 1),
+            duration=("duration", 1),
+            button=("button", 1),
+            clicks=("clicks", 1),
+            interval=("interval", 1),
+            write_text=("write_text", 1),
+            button_press=("press_button", 1),
+            wait_time=("wait_time", 1)
+            )
+        self.on_off()
+        self.focus()
 
-        lbl_action = Label(self, text="Выберите действие")
-        lbl_action.pack(side=LEFT, padx=1, expand=True)
+    def panel_move_mouse(self):
+        self.show_panel_widgets()
+        self.set_command(
+            x=("ent_x", 1),
+            y=("ent_y", 1),
+            duration=("duration", 1),
+            button=("button", 0),
+            clicks=("clicks", 0),
+            interval=("interval", 0),
+            write_text=("write_text", 0),
+            button_press=("press_button", 0),
+            wait_time=("wait_time", 0)
+            )
+        self.on_off()
+        self.focus()
 
-        self.combo_action = Combobox(self)
-        self.combo_action['values'] = action
-        self.combo_action.current(0)
-        self.combo_action.pack(side=LEFT, padx=5, expand=True)
+    def panel_drag_mouse(self):
+        self.show_panel_widgets()
+        self.set_command(
+            x=("ent_x", 1),
+            y=("ent_y", 1),
+            duration=("duration", 1),
+            button=("button", 1),
+            clicks=("clicks", 0),
+            interval=("interval", 0),
+            write_text=("write_text", 0),
+            button_press=("press_button", 0),
+            wait_time=("wait_time", 0)
+            )
+        self.on_off()
+        self.focus()
 
-        lbl_x = Label(self, text="x:")
-        lbl_x.pack(side=LEFT)
-        ent_x = Entry(self, width=4)
-        ent_x.pack(side=LEFT, padx=2)
+    def panel_click_mouse(self):
+        self.show_panel_widgets()
+        self.set_command(
+            x=("ent_x", 1),
+            y=("ent_y", 1),
+            duration=("duration", 0),
+            button=("button", 1),
+            clicks=("clicks", 1),
+            interval=("interval", 1),
+            write_text=("write_text", 0),
+            button_press=("press_button", 0),
+            wait_time=("wait_time", 0)
+            )
+        self.on_off()
+        self.focus()
 
-        lbl_y = Label(self, text="y:")
-        lbl_y.pack(side=LEFT)
-        ent_y = Entry(self, width=4)
-        ent_y.pack(side=LEFT, padx=2)
+    def panel_doubleclick_mouse(self):
+        self.show_panel_widgets()
+        self.set_command(
+            x=("ent_x", 1),
+            y=("ent_y", 1),
+            duration=("duration", 0),
+            button=("button", 1),
+            clicks=("clicks", 0),
+            interval=("interval", 1),
+            write_text=("write_text", 0),
+            button_press=("press_button", 0),
+            wait_time=("wait_time", 0)
+            )
+        self.on_off()
+        self.focus()
 
-        lbl_duration = Label(self, text="Задержка")
-        lbl_duration.pack(side=LEFT)
-        ent_duration = Entry(self, width=2)
-        ent_duration.pack(side=LEFT)
+    def panel_write_text(self):
+        self.show_panel_widgets()
+        self.set_command(
+            x=("ent_x", 0),
+            y=("ent_y", 0),
+            duration=("duration", 0),
+            button=("button", 0),
+            clicks=("clicks", 0),
+            interval=("interval", 1),
+            write_text=("write_text", 1),
+            button_press=("press_button", 0),
+            wait_time=("wait_time", 0)
+            )
+        self.on_off()
+        self.focus()
 
-        lbl_button = Label(self, text="Клавиша")
-        lbl_button.pack(side=LEFT)
-        combo_action = Combobox(self)
-        combo_action['values'] = ["Левая кнопка", "Средняя кнопка", "Правая кнопка"]
-        combo_action.current(0)
-        combo_action.pack(side=LEFT, padx=5, expand=True)
+    def panel_press_button(self):
+        self.show_panel_widgets()
+        self.set_command(
+            x=("ent_x", 0),
+            y=("ent_y", 0),
+            duration=("duration", 0),
+            button=("button", 0),
+            clicks=("clicks", 0),
+            interval=("interval", 0),
+            write_text=("write_text", 0),
+            button_press=("press_button", 1),
+            wait_time=("wait_time", 0)            
+            )
+        self.on_off()
+        self.focus()
 
-    def panel_five(self, action):
-        pass
+    def panel_wait_time(self):
+        self.show_panel_widgets()
+        self.set_command(
+            x=("ent_x", 0),
+            y=("ent_y", 0),
+            duration=("duration", 0),
+            button=("button", 0),
+            clicks=("clicks", 0),
+            interval=("interval", 0),
+            write_text=("write_text", 0),
+            button_press=("press_button", 0),
+            wait_time=("wait_time", 1)
+            )
+        self.on_off()
+        self.focus()
+
+    def refresh_panel(self):
+        text = self.combo_action.get()
+        if text == "Переместить курсор":
+            self.panel_move_mouse()
+        elif text == "Перетащить мышью":
+            self.panel_drag_mouse()
+        elif text == "Клик мыши":
+            self.panel_click_mouse()
+        elif text == "Двойной клик":
+            self.panel_doubleclick_mouse()
+        elif text == "Ввести текст":
+            self.panel_write_text()
+        elif text == "Нажать клавишу":
+            self.panel_press_button()
+        elif text == "Ждать":
+            self.panel_wait_time()
+        else:
+            pass
  
     def initUI(self):
-        # !!!выбор действия перенести на основную панель и убрать из добавляющейся
-        # действие можно добавить из основной панели в самый низ и из добавляющейся 
-        # новую строку под неё 
-        if self.act == '':
-            self.pack(fill=BOTH, expand=True)
+        self.pack(fill=BOTH, expand=True)
 
-            lbl_action = Label(self, text="Выберите действие")
-            lbl_action.pack(side=LEFT, padx=1, expand=True)
-
-            self.combo_action = Combobox(self)
-            self.combo_action['values'] = [act for act in actions.Actions().all_actions]
-            # self.combo_action.current(0)
-            self.combo_action.pack(side=LEFT, padx=5, expand=True)
-
-            self.act = self.combo_action.get()
-            self.update()
-
-            # print(self.act)
-            self.after(100, self.initUI())
-
-        elif self.act == "Переместить курсор":
-            # self.destroy()
-            self.pack(fill=BOTH, expand=True)
-            # print("PK")
-            self.panel_three("Переместить курсор")
-            self.act = self.combo_action.get()
-            self.after(100, self.initUI())
-
-        elif self.act == "Перетащить мышью":
-            self.pack(fill=BOTH, expand=True)
-            # print("DM")
-            self.panel_three("Перетащить мышью")
-            self.act = self.combo_action.get()
-            self.after(100, self.initUI())
-
-        # else:
-        #     print("2")
-        #     btn_bed_result = Button(self, text="Фактический результат")
-        #     btn_bed_result.pack(side=LEFT, padx=5, expand=True)
-
-        #     btn_good_result = Button(self, text="Ожидаемый результат")
-        #     btn_good_result.pack(side=LEFT, padx=5, expand=True)
-
-        #     btn_del = Button(self, text="Удаляшечки", command=self.return_values)
-        #     btn_del.pack(side=LEFT, padx=5, expand=True)
-
-        #     btn_print = Button(self, text="Print", command=self.get_action)
-        #     btn_print.pack(side=LEFT, padx=5, expand=True)
-
-        # self.update()
-
-    # нужно описать условие для отображения панели и в конце self.update чтобы панель обновлялась
-
+        self.btn_delete = Button(self, text= "X", command=self.delete_panel, width=5)
+        self.btn_delete.pack(side=LEFT, padx=5)
         
+        self.lbl_action = Label(self, text="Выберите действие")
+        self.lbl_action.pack(side=LEFT, padx=1)
 
+        self.combo_action = Combobox(self)
+        self.combo_action['values'] = [act for act in actions.Actions().all_actions]
+        self.combo_action.current(0)
+        self.combo_action.pack(side=LEFT, padx=5)
+
+        self.btn_refresh = Button(self, text="Обновить", command=self.refresh_panel)
+        self.btn_refresh.pack(side=LEFT, padx=5)
+
+        self.ent_write_text = Entry(self, width=40)
+
+        self.lbl_x = Label(self, text="x:")
+        self.ent_x = Entry(self, width=4)
+
+        self.lbl_y = Label(self, text="y:")
+        self.ent_y = Entry(self, width=4)
+
+        self.lbl_duration = Label(self, text="Задержка")
+        self.ent_duration = Entry(self, width=2)
+        self.ent_duration.insert(0, 0)
+
+        self.lbl_interval = Label(self, text="Интервал")
+        self.ent_interval = Entry(self, width=2)
+        self.ent_interval.insert(0, 0)
+
+        self.lbl_clicks = Label(self, text="Нажатий")
+        self.combo_clicks = Combobox(self)
+        self.combo_clicks['values'] = ["1", "2", "3"]
+        self.combo_clicks.current(0)
+
+        self.lbl_button = Label(self, text="Клавиша")
+        self.combo_buttons = Combobox(self)
+        self.combo_buttons['values'] = ["Левая кнопка", "Средняя кнопка", "Правая кнопка"]
+        self.combo_buttons.current(0)
+        
+        self.lbl_press = Label(self, text="Выберите клавишу")
+        self.combo_press_button = Combobox(self)
+        self.combo_press_button['values'] = self.buttons
+        self.combo_buttons.current(0)
+
+        self.lbl_wait_time = Label(self, text="Ожидание")
+        self.ent_wait_time = Entry(self, width=2)
+        self.ent_wait_time.insert(0, 1)
+
+        self.focus()
+
+
+    # реализовать панель через метод скрытия виджетов https://www.delftstack.com/ru/howto/python-tkinter/how-to-hide-recover-and-delete-tkinter-widgets/
 
     def print_inst(self):
         print(Panel.get_instances())
