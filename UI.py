@@ -20,25 +20,30 @@ class Example(Frame):
         self.row_dict[b] = b.add_action()
 
     def all_obj(self):
-        for key in self.row_dict.keys():
-            if key.state_delete:
-                del self.row_dict[key]
+        temp_row_dict = self.row_dict.copy()
+        for act in temp_row_dict:
+            if act.state_delete == 0:
+                self.row_dict[act] = act.get_action()
+            else:
+                del self.row_dict[act]
 
     def initUI(self):
         self.parent.title("Simple")
         self.pack(fill=BOTH, expand=1)
 
     def print_dict(self):
-        for act in self.row_dict:
-            self.row_dict[act] = act.get_action()
+        temp_row_dict = self.row_dict.copy()
+        for act in temp_row_dict:
+            if act.state_delete == 0:
+                self.row_dict[act] = act.get_action()
+            else:
+                del self.row_dict[act]
         print(self.row_dict)
-
-#!!! Нужно придумать обработчик удаленных объектов, чтобы по ним не падала ошибка в логи
 
     def save_file(self):
         self.all_obj()
-        for act in self.row_dict:
-            self.row_dict[act] = act.get_action()
+        # for act in self.row_dict:
+        #     self.row_dict[act] = act.get_action()
         with open("test_save.py", "w", encoding="utf-8")as wf:
             text_import = actions.Actions().turn_on_lib()
             wf.write(text_import)
