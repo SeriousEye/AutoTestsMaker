@@ -117,11 +117,11 @@ class Panel(Frame, KeepRefs):
         # print(self.count)
         # self.value = value
         self.state_delete = 0
-        self.x = None
-        self.y = None
+        self.x = 0
+        self.y = 0
         self.duration = 0
-        self.button = None
-        self.clicks = None
+        self.button = 'left'
+        self.clicks = 0
         self.interval = 0
         self.press_button = "enter"
         self.write_text = ""
@@ -142,7 +142,7 @@ class Panel(Frame, KeepRefs):
 
     def delete_panel(self):
         """Удаление текущей панели."""
-        self.state_delete = 0
+        self.state_delete = 1
         self.destroy()
 
     def get_action(self):
@@ -187,16 +187,18 @@ class Panel(Frame, KeepRefs):
         self.press_button = self.combo_press_button.get()
         self.wait_time = self.ent_wait_time.get()
 
-    def set_command(self, x, y, duration, button, clicks, interval, write_text, button_press, wait_time):
+    def set_command(self, x=None, y=None, duration=None, button=None, clicks=None, interval=None, write_text=None, button_press=None, wait_time=None):
         """
         Нужно добавлять значение для атрибутов в виде кортежа (a, b)
         где a - это ключ словаря all_commands, b - значение 0 или 1,
         т.е. включено или выключено        
         """
+        # НУЖНО ПЕРЕДЕЛАТЬ!!!
 
         tot_list = [x, y, duration, button, clicks, interval, write_text, button_press, wait_time]
         for elem in tot_list:
-            self.all_commands[elem[0]] = elem[1]
+            if elem:
+                self.all_commands[elem[0]] = elem[1]
 
     def get_coord(self):
         """Возвращает координаты курсора мыши."""
@@ -309,15 +311,15 @@ class Panel(Frame, KeepRefs):
 
     def show_panel_widgets(self):
         self.set_command(
-            x=("ent_x", 1),
-            y=("ent_y", 1),
-            duration=("duration", 1),
-            button=("button", 1),
-            clicks=("clicks", 1),
-            interval=("interval", 1),
-            write_text=("write_text", 1),
-            button_press=("press_button", 1),
-            wait_time=("wait_time", 1)
+            x=("ent_x", 0),
+            y=("ent_y", 0),
+            duration=("duration", 0),
+            button=("button", 0),
+            clicks=("clicks", 0),
+            interval=("interval", 0),
+            write_text=("write_text", 0),
+            button_press=("press_button", 0),
+            wait_time=("wait_time", 0)
             )
         self.on_off()
         self.focus()
@@ -327,13 +329,13 @@ class Panel(Frame, KeepRefs):
         self.set_command(
             x=("ent_x", 1),
             y=("ent_y", 1),
-            duration=("duration", 1),
-            button=("button", 0),
-            clicks=("clicks", 0),
-            interval=("interval", 0),
-            write_text=("write_text", 0),
-            button_press=("press_button", 0),
-            wait_time=("wait_time", 0)
+            duration=("duration", 1)
+            # button=("button", 0),
+            # clicks=("clicks", 0),
+            # interval=("interval", 0),
+            # write_text=("write_text", 0),
+            # button_press=("press_button", 0),
+            # wait_time=("wait_time", 0)
             )
         self.on_off()
         self.focus()
@@ -344,12 +346,12 @@ class Panel(Frame, KeepRefs):
             x=("ent_x", 1),
             y=("ent_y", 1),
             duration=("duration", 1),
-            button=("button", 1),
-            clicks=("clicks", 0),
-            interval=("interval", 0),
-            write_text=("write_text", 0),
-            button_press=("press_button", 0),
-            wait_time=("wait_time", 0)
+            button=("button", 1)
+            # clicks=("clicks", 0),
+            # interval=("interval", 0),
+            # write_text=("write_text", 0),
+            # button_press=("press_button", 0),
+            # wait_time=("wait_time", 0)
             )
         self.on_off()
         self.focus()
@@ -359,13 +361,13 @@ class Panel(Frame, KeepRefs):
         self.set_command(
             x=("ent_x", 1),
             y=("ent_y", 1),
-            duration=("duration", 0),
+            # duration=("duration", 0),
             button=("button", 1),
             clicks=("clicks", 1),
-            interval=("interval", 1),
-            write_text=("write_text", 0),
-            button_press=("press_button", 0),
-            wait_time=("wait_time", 0)
+            interval=("interval", 1)
+            # write_text=("write_text", 0),
+            # button_press=("press_button", 0),
+            # wait_time=("wait_time", 0)
             )
         self.on_off()
         self.focus()
@@ -375,13 +377,13 @@ class Panel(Frame, KeepRefs):
         self.set_command(
             x=("ent_x", 1),
             y=("ent_y", 1),
-            duration=("duration", 0),
+            # duration=("duration", 0),
             button=("button", 1),
-            clicks=("clicks", 0),
-            interval=("interval", 1),
-            write_text=("write_text", 0),
-            button_press=("press_button", 0),
-            wait_time=("wait_time", 0)
+            # clicks=("clicks", 0),
+            interval=("interval", 1)
+            # write_text=("write_text", 0),
+            # button_press=("press_button", 0),
+            # wait_time=("wait_time", 0)
             )
         self.on_off()
         self.focus()
@@ -389,15 +391,15 @@ class Panel(Frame, KeepRefs):
     def panel_write_text(self):
         self.show_panel_widgets()
         self.set_command(
-            x=("ent_x", 0),
-            y=("ent_y", 0),
-            duration=("duration", 0),
-            button=("button", 0),
-            clicks=("clicks", 0),
+            # x=("ent_x", 0),
+            # y=("ent_y", 0),
+            # duration=("duration", 0),
+            # button=("button", 0),
+            # clicks=("clicks", 0),
             interval=("interval", 1),
-            write_text=("write_text", 1),
-            button_press=("press_button", 0),
-            wait_time=("wait_time", 0)
+            write_text=("write_text", 1)
+            # button_press=("press_button", 0),
+            # wait_time=("wait_time", 0)
             )
         self.on_off()
         self.focus()
@@ -405,15 +407,15 @@ class Panel(Frame, KeepRefs):
     def panel_press_button(self):
         self.show_panel_widgets()
         self.set_command(
-            x=("ent_x", 0),
-            y=("ent_y", 0),
-            duration=("duration", 0),
-            button=("button", 0),
-            clicks=("clicks", 0),
-            interval=("interval", 0),
-            write_text=("write_text", 0),
-            button_press=("press_button", 1),
-            wait_time=("wait_time", 0)            
+            # x=("ent_x", 0),
+            # y=("ent_y", 0),
+            # duration=("duration", 0),
+            # button=("button", 0),
+            # clicks=("clicks", 0),
+            # interval=("interval", 0),
+            # write_text=("write_text", 0),
+            button_press=("press_button", 1)
+            # wait_time=("wait_time", 0)            
             )
         self.on_off()
         self.focus()
@@ -421,14 +423,14 @@ class Panel(Frame, KeepRefs):
     def panel_wait_time(self):
         self.show_panel_widgets()
         self.set_command(
-            x=("ent_x", 0),
-            y=("ent_y", 0),
-            duration=("duration", 0),
-            button=("button", 0),
-            clicks=("clicks", 0),
-            interval=("interval", 0),
-            write_text=("write_text", 0),
-            button_press=("press_button", 0),
+            # x=("ent_x", 0),
+            # y=("ent_y", 0),
+            # duration=("duration", 0),
+            # button=("button", 0),
+            # clicks=("clicks", 0),
+            # interval=("interval", 0),
+            # write_text=("write_text", 0),
+            # button_press=("press_button", 0),
             wait_time=("wait_time", 1)
             )
         self.on_off()
@@ -474,9 +476,11 @@ class Panel(Frame, KeepRefs):
 
         self.lbl_x = Label(self, text="x:")
         self.ent_x = Entry(self, width=4)
+        self.ent_x.insert(0, self.x)
 
         self.lbl_y = Label(self, text="y:")
         self.ent_y = Entry(self, width=4)
+        self.ent_y.insert(0, self.y)
 
         self.lbl_duration = Label(self, text="Задержка")
         self.ent_duration = Entry(self, width=2)
