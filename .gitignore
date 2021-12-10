@@ -15,3 +15,6 @@ test_test.py
 test_to_del.py
 pyautogui_test.py
 test_save.py
+test_main.py
+test_panel.py
+check_files.py
