@@ -7,17 +7,106 @@ import action_buttons as ab
 
 
 class Example(Frame):
-    row_dict = {}  
+    row_count = 1
+    row_dict = {}
+    row_list = [0]
+    button_up = [0]
+    button_down = [0]
 
     def __init__(self, parent):
-        Frame.__init__(self, parent, background="white")   
+        Frame.__init__(self, parent)   
         self.parent = parent
-        self.initUI()
+        # self.initUI()
         self.buttons()
 
     def add_panel(self):
-        b = ab.Panel()
-        self.row_dict[b] = b.add_action()
+        self.add_to_panel()
+        pan = ab.Panel()
+        self.row_dict[pan] = pan.add_action()
+        pan.grid(column=1, row=self.row_count, sticky=W)
+        self.row_list.append(pan)
+        self.row_count += 1
+
+    def add_to_panel(self):
+        self.btn_up = Button(self.parent, text="^")
+        self.btn_up.bind("<1>", self.f)
+        self.btn_up.grid(column=2, row=self.row_count)
+        self.button_up.append(self.btn_up)
+
+        self.btn_down = Button(self.parent, text="v")
+        self.btn_down.bind("<1>", self.f)
+        self.btn_down.grid(column=3, row=self.row_count)
+        self.button_down.append(self.btn_down)
+
+    def panels_up(self, position):
+        panel_current = self.row_list[position]
+        panel_before = self.row_list[position-1]
+
+        btn_up_cur = self.button_up[position]
+        btn_up_bef = self.button_up[position-1]
+
+        btn_down_cur = self.button_down[position]
+        btn_down_bef = self.button_down[position-1]
+
+        panel_before.grid_forget()
+        btn_up_bef.grid_forget()
+        btn_down_bef.grid_forget()
+        panel_current.grid_forget()
+        btn_up_cur.grid_forget()
+        btn_down_cur.grid_forget()
+
+        self.row_list[position - 1], self.row_list[position] = self.row_list[position], self.row_list[position - 1]
+        self.button_up[position - 1], self.button_up[position] = self.button_up[position], self.button_up[position - 1]
+        self.button_down[position - 1], self.button_down[position] = self.button_down[position], self.button_down[position - 1]
+
+        panel_before.grid(column=1, row=position, sticky=W)
+        btn_up_bef.grid(column=2, row=position)
+        btn_down_bef.grid(column=3, row=position)
+        panel_current.grid(column=1, row=position-1, sticky=W)
+        btn_up_cur.grid(column=2, row=position-1)
+        btn_down_cur.grid(column=3, row=position-1)
+
+    def panels_down(self, position):
+        panel_current = self.row_list[position]
+        panel_after = self.row_list[position+1]
+
+        btn_up_cur = self.button_up[position]
+        btn_up_aft = self.button_up[position+1]
+
+        btn_down_cur = self.button_down[position]
+        btn_down_aft = self.button_down[position+1]
+
+        panel_after.grid_forget()
+        btn_up_aft.grid_forget()
+        btn_down_aft.grid_forget()
+        panel_current.grid_forget()
+        btn_up_cur.grid_forget()
+        btn_down_cur.grid_forget()
+
+        self.row_list[position + 1], self.row_list[position] = self.row_list[position], self.row_list[position + 1]
+        self.button_up[position + 1], self.button_up[position] = self.button_up[position], self.button_up[position + 1]
+        self.button_down[position + 1], self.button_down[position] = self.button_down[position], self.button_down[position + 1]
+        print(panel_current, btn_up_cur, btn_down_cur)
+        print(panel_after, btn_up_aft, btn_down_aft)
+
+        panel_after.grid(column=1, row=position, sticky=W)
+        btn_up_aft.grid(column=2, row=position)
+        btn_down_aft.grid(column=3, row=position)
+        panel_current.grid(column=1, row=position+1, sticky=W)
+        btn_up_cur.grid(column=2, row=position+1)
+        btn_down_cur.grid(column=3, row=position+1)
+
+    def f(self, event):
+        caller = event.widget
+        if caller in self.button_up:
+            position = self.button_up.index(caller)
+        else:
+            position = self.button_down.index(caller)
+        if caller in self.button_up and position > 1:
+            self.panels_up(position)
+
+        if caller in self.button_down and position < (len(self.button_down) - 1):
+            self.panels_down(position)
 
     def all_obj(self):
         temp_row_dict = self.row_dict.copy()
@@ -29,7 +118,7 @@ class Example(Frame):
 
     def initUI(self):
         self.parent.title("Simple")
-        self.pack(fill=BOTH, expand=1)
+        # self.pack(fill=BOTH, expand=1)
 
     def print_dict(self):
         temp_row_dict = self.row_dict.copy()
@@ -51,28 +140,31 @@ class Example(Frame):
                 wf.write(act)
 
     def buttons(self):
-        btn_screenshot = Button(self, text="Скриншот", command=ss.main)
-        btn_screenshot.pack(side=LEFT)
+        btn_add = Button(master=self.parent, text="Добавить", command=self.add_panel)
+        btn_add.grid(column=0, row=0)
 
-        btn_settings = Button(self, text="Настроить монитор", command=gc.getConfig().change_monitor_cfg())
-        btn_settings.pack(side=LEFT)
+        btn_screenshot = Button(master=self.parent, text="Скриншот", command=ss.main)
+        btn_screenshot.grid(column=10, row=0)
 
-        btn_add = Button(self, text="Добавить", command=self.add_panel)
-        btn_add.pack(side=LEFT)
+        btn_settings = Button(master=self.parent, text="Настроить монитор", command=gc.getConfig().change_monitor_cfg())
+        btn_settings.grid(column=11, row=0)
 
-        btn_print = Button(self, text="Print", command=self.print_dict)
-        btn_print.pack(side=LEFT)
+        btn_print = Button(master=self.parent, text="Print", command=self.print_dict)
+        btn_print.grid(column=12, row=0)
 
-        btn_save = Button(self, text="Сохранить", command=self.save_file)
-        btn_save.pack(side=LEFT)
+        btn_save = Button(master=self.parent, text="Сохранить", command=self.save_file)
+        btn_save.grid(column=13, row=0)
+
+# Нужно доработать отображение(удаление) панели оберки в виде кнопок вверх и вниз
 
 # https://stackoverflow.com/questions/328851/printing-all-instances-of-a-class посмотреть все инстансы класса
         
-def main():
+# def main():
+if __name__ == '__main__':
     root = Tk()
     root.geometry("+300+300")
     app = Example(root)
     root.mainloop()  
  
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
