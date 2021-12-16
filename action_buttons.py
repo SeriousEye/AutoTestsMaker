@@ -28,7 +28,7 @@
 # if __name__ == '__main__':
 #     main()
 
-from tkinter import Label, Tk, LEFT, BOTH, RAISED, Canvas, END
+from tkinter import Label, Tk, LEFT, BOTH, RAISED, Canvas, END, E, W, N, S
 from tkinter.ttk import Frame, Button, Style, Combobox, Entry
 from collections import defaultdict
 from pyautogui import position, press
@@ -88,7 +88,7 @@ class Panel(Frame, KeepRefs):
     buttons = [
         'enter', 'space', 'escape', ' ', '!', '"', '#', '$', '%', '&', "'", '(',
         ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`',
+        '8', '9', ':', ';', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`',
         'a', 'b', 'c', 'd', 'e','f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
         'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
         'accept', 'add', 'alt', 'altleft', 'altright', 'apps', 'backspace',
@@ -215,80 +215,80 @@ class Panel(Frame, KeepRefs):
 
     def panel_x(self, value):
         if value:
-            self.lbl_x.pack(side=LEFT)
-            self.ent_x.pack(side=LEFT, padx=2)
+            self.lbl_x.grid(column=6, row=1)
+            self.ent_x.grid(column=7, row=1)
         else:
-            self.lbl_x.pack_forget()
-            self.ent_x.pack_forget()
+            self.lbl_x.grid_forget()
+            self.ent_x.grid_forget()
 
     def panel_y(self, value):
         if value:
-            self.lbl_y.pack(side=LEFT)
-            self.ent_y.pack(side=LEFT, padx=2)
+            self.lbl_y.grid(column=8, row=1)
+            self.ent_y.grid(column=9, row=1)
         else:
-            self.lbl_y.pack_forget()
-            self.ent_y.pack_forget()
+            self.lbl_y.grid_forget()
+            self.ent_y.grid_forget()
 
     def panel_duration(self, value):
         if value:
-            self.lbl_duration.pack(side=LEFT)
-            self.ent_duration.pack(side=LEFT, padx=2)
+            self.lbl_duration.grid(column=10, row=1)
+            self.ent_duration.grid(column=11, row=1)
         else:
-            self.lbl_duration.pack_forget()
-            self.ent_duration.pack_forget()
+            self.lbl_duration.grid_forget()
+            self.ent_duration.grid_forget()
 
     def panel_button(self, value):
         if value:
-            self.combo_buttons.pack(side=LEFT)
-            self.combo_buttons.pack(side=LEFT, padx=2)
+            self.combo_buttons.grid(column=12, row=1)
+            self.combo_buttons.grid(column=13, row=1)
         else:
-            self.combo_buttons.pack_forget()
-            self.combo_buttons.pack_forget()
+            self.combo_buttons.grid_forget()
+            self.combo_buttons.grid_forget()
     
     def panel_clicks(self, value):
         if value:
-            self.combo_clicks.pack(side=LEFT)
-            self.combo_clicks.pack(side=LEFT, padx=2)
+            self.combo_clicks.grid(column=14, row=1)
+            self.combo_clicks.grid(column=15, row=1)
         else:
-            self.combo_clicks.pack_forget()
-            self.combo_clicks.pack_forget()
+            self.combo_clicks.grid_forget()
+            self.combo_clicks.grid_forget()
     
     def panel_interval(self, value):
         if value:
-            self.lbl_interval.pack(side=LEFT)
-            self.ent_interval.pack(side=LEFT, padx=2)
+            self.lbl_interval.grid(column=16, row=1)
+            self.ent_interval.grid(column=17, row=1)
         else:
-            self.lbl_interval.pack_forget()
-            self.ent_interval.pack_forget()
+            self.lbl_interval.grid_forget()
+            self.ent_interval.grid_forget()
 
     def panel_w_text(self, value):
         if value:
-            self.ent_write_text.pack(side=LEFT, padx=2)
+            self.ent_write_text.grid(column=18, row=1)
         else:
-            self.ent_write_text.pack_forget()
+            self.ent_write_text.grid_forget()
 
     def panel_p_button(self, value):
         if value:
-            self.lbl_press.pack(side=LEFT)
-            self.combo_press_button.pack(side=LEFT, padx=2)
+            self.lbl_press.grid(column=19, row=1)
+            self.combo_press_button.grid(column=20, row=1)
         else:
-            self.lbl_press.pack_forget()
-            self.combo_press_button.pack_forget()
+            self.lbl_press.grid_forget()
+            self.combo_press_button.grid_forget()
 
     def panel_w_time(self, value):
         if value:
-            self.lbl_wait_time.pack(side=LEFT)
-            self.ent_wait_time.pack(side=LEFT, padx=5)
+            self.lbl_wait_time.grid(column=21, row=1)
+            self.ent_wait_time.grid(column=22, row=1)
         else:
-            self.lbl_wait_time.pack_forget()
-            self.ent_wait_time.pack_forget()           
+            self.lbl_wait_time.grid_forget()
+            self.ent_wait_time.grid_forget()           
 
     def on_off(self):
         """Включает или выключает виджеты в соответствии с параметрами словаря all_commands"""
 
-        self.lbl_action.pack()
-        self.combo_action.pack()
-        self.btn_refresh.pack()
+        # self.lbl_action.pack()
+        # self.combo_action.pack()
+        # self.btn_refresh.pack()
         for command in self.all_commands:
             if command == "ent_x":
                 self.panel_x(self.all_commands[command])
@@ -456,21 +456,21 @@ class Panel(Frame, KeepRefs):
             pass
  
     def initUI(self):
-        self.pack(fill=BOTH, expand=True)
+        # self.pack(fill=BOTH, expand=True)
 
         self.btn_delete = Button(self, text= "X", command=self.delete_panel, width=5)
-        self.btn_delete.pack(side=LEFT, padx=5)
+        self.btn_delete.grid(column=1, row=1)
         
         self.lbl_action = Label(self, text="Выберите действие")
-        self.lbl_action.pack(side=LEFT, padx=1)
+        self.lbl_action.grid(column=2, row=1)
 
         self.combo_action = Combobox(self)
         self.combo_action['values'] = [act for act in actions.Actions().all_actions]
         self.combo_action.current(0)
-        self.combo_action.pack(side=LEFT, padx=5)
+        self.combo_action.grid(column=3, row=1)
 
         self.btn_refresh = Button(self, text="Обновить", command=self.refresh_panel)
-        self.btn_refresh.pack(side=LEFT, padx=5)
+        self.btn_refresh.grid(column=4, row=1)
 
         self.ent_write_text = Entry(self, width=40)
 
