@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter.filedialog import asksaveasfilename
 import actions
 import show_screenshot as ss
 import get_config as gc
@@ -130,12 +131,17 @@ class Example(Frame):
         print(self.row_list)
 
     def save_file(self):
-        # self.all_obj()
-        with open("test_save.py", "w", encoding="utf-8")as wf:
-            text_import = actions.Actions().turn_on_lib()
-            wf.write(text_import)
-            for act in self.row_list[1:]:
-                wf.write(act.get_action())
+        file_name = asksaveasfilename(
+            filetypes=(("Python files", "*.py"),
+                       ("All files", "*.*")    
+            )
+        )
+        if file_name:
+            with open(file_name, "w", encoding="utf-8")as wf:
+                text_import = actions.Actions().turn_on_lib()
+                wf.write(text_import)
+                for act in self.row_list[1:]:
+                    wf.write(act.get_action())
 
     def buttons(self):
         btn_add = Button(master=self.menu_frame, text="Добавить", command=self.add_panel)
@@ -158,7 +164,7 @@ class Example(Frame):
 # https://stackoverflow.com/questions/328851/printing-all-instances-of-a-class посмотреть все инстансы класса
 
 # ПОРЯДОК ДОДЕЛКИ ПРИЛОЖЕНИЯ ДО СОСТОЯНИЯ РАБОЧЕГО!!! 
-# 1. Сделать кнопку сохранения файла в определенную директорию и с указанием названия 
+# READY 1. Сделать кнопку сохранения файла в определенную директорию и с указанием названия 
 #   - https://pythonru.com/uroki/dialogovye-vsplyvajushhie-okna-tkinter-9 
 #   - https://younglinux.info/tkinter/dialogbox
 # 2. Допилить к панели, в виде флага включения, сохранение скриншота  после выполнения действия 
