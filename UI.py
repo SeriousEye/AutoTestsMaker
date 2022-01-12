@@ -24,7 +24,6 @@ class Example(Frame):
     def add_panel(self):
         self.add_to_panel()
         pan = ab.Panel()
-        self.row_dict[pan] = pan.add_action()
         pan.grid(column=1, row=self.row_count, sticky=W)
         self.row_list.append(pan)
         self.row_count += 1
@@ -88,8 +87,6 @@ class Example(Frame):
         self.row_list[position + 1], self.row_list[position] = self.row_list[position], self.row_list[position + 1]
         self.button_up[position + 1], self.button_up[position] = self.button_up[position], self.button_up[position + 1]
         self.button_down[position + 1], self.button_down[position] = self.button_down[position], self.button_down[position + 1]
-        print(panel_current, btn_up_cur, btn_down_cur)
-        print(panel_after, btn_up_aft, btn_down_aft)
 
         panel_after.grid(column=1, row=position, sticky=W)
         btn_up_aft.grid(column=2, row=position)
