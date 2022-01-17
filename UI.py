@@ -50,7 +50,7 @@ class Example(Frame):
         """В окно добавляются кнопки вверх, вниз и удаление, также за каждой кнопкой закрепляется обработчик по нажатию кнопки"""
         self.btn_up = Button(self.parent, text=" ^ ")
         self.btn_up.bind("<1>", self.f)
-        self.btn_up.grid(column=2, row=self.row_count, padx=2)
+        self.btn_up.grid(column=2, row=self.row_count, padx=(15, 2))
         self.button_up.append(self.btn_up)
 
         self.btn_down = Button(self.parent, text=" v ")
@@ -106,12 +106,12 @@ class Example(Frame):
         self.delete_widgets[position - 1], self.delete_widgets[position] = self.delete_widgets[position], self.delete_widgets[position - 1]
 
         panel_before.grid(column=1, row=position, sticky=W)
-        btn_up_bef.grid(column=2, row=position, padx=2)
+        btn_up_bef.grid(column=2, row=position, padx=(15, 2))
         btn_down_bef.grid(column=3, row=position, padx=2)
         del_wgt_bef.grid(column=4, row=position, padx=(20, 0))
 
         panel_current.grid(column=1, row=position-1, sticky=W)
-        btn_up_cur.grid(column=2, row=position-1, padx=2)
+        btn_up_cur.grid(column=2, row=position-1, padx=(15, 2))
         btn_down_cur.grid(column=3, row=position-1, padx=2)
         del_wgt_cur.grid(column=4, row=position-1, padx=(20, 0))
 
@@ -145,12 +145,12 @@ class Example(Frame):
         self.delete_widgets[position + 1], self.delete_widgets[position] = self.delete_widgets[position], self.delete_widgets[position + 1]
 
         panel_after.grid(column=1, row=position, sticky=W)
-        btn_up_aft.grid(column=2, row=position, padx=2)
+        btn_up_aft.grid(column=2, row=position, padx=(15, 2))
         btn_down_aft.grid(column=3, row=position, padx=2)
         del_wgt_aft.grid(column=4, row=position, padx=(20, 0))
 
         panel_current.grid(column=1, row=position+1, sticky=W)
-        btn_up_cur.grid(column=2, row=position+1, padx=2)
+        btn_up_cur.grid(column=2, row=position+1, padx=(15, 2))
         btn_down_cur.grid(column=3, row=position+1, padx=2)
         del_wgt_cur.grid(column=4, row=position+1, padx=(20, 0))
 
