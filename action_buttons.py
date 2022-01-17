@@ -75,6 +75,7 @@ class Panel(Frame, KeepRefs):
         "write_text": 1,
         "press_button": 1,
         "wait_time": 1,
+        "scroll": 1,
         "screenshot": 1
     }
 
@@ -128,6 +129,7 @@ class Panel(Frame, KeepRefs):
         self.press_button = "enter"
         self.write_text = ""
         self.wait_time = 1
+        self.scroll = 0
         self.screenshot_state = 0
         self.initUI()
         self.bind("<KeyPress>", self.insert_coords)
@@ -165,6 +167,8 @@ class Panel(Frame, KeepRefs):
             return act.write_text(text=self.write_text, interval=self.interval)
         elif text == "Нажать клавишу":
             return act.press_button(name_button=self.press_button)
+        elif text == "Скролл":
+            return act.scroll_mouse(scroll=self.scroll, x=self.x, y=self.y)
         elif text == "Ждать":
             return act.wait_time(wait=self.wait_time)
         else:
@@ -190,8 +194,9 @@ class Panel(Frame, KeepRefs):
         self.write_text = self.ent_write_text.get()
         self.press_button = self.combo_press_button.get()
         self.wait_time = self.ent_wait_time.get()
+        self.scroll = self.ent_scroll.get()
 
-    def set_command(self, x=None, y=None, duration=None, button=None, clicks=None, interval=None, write_text=None, button_press=None, wait_time=None):
+    def set_command(self, x=None, y=None, duration=None, button=None, clicks=None, interval=None, write_text=None, button_press=None, wait_time=None, scroll=None):
         """
         Нужно добавлять значение для атрибутов в виде кортежа (a, b)
         где a - это ключ словаря all_commands, b - значение 0 или 1,
@@ -199,7 +204,7 @@ class Panel(Frame, KeepRefs):
         """
         # НУЖНО ПЕРЕДЕЛАТЬ!!!
 
-        tot_list = [x, y, duration, button, clicks, interval, write_text, button_press, wait_time]
+        tot_list = [x, y, duration, button, clicks, interval, write_text, button_press, wait_time, scroll]
         for elem in tot_list:
             if elem:
                 self.all_commands[elem[0]] = elem[1]
@@ -294,7 +299,17 @@ class Panel(Frame, KeepRefs):
             self.ent_wait_time.grid(column=22, row=1)
         else:
             self.lbl_wait_time.grid_forget()
-            self.ent_wait_time.grid_forget()           
+            self.ent_wait_time.grid_forget()
+
+    def panel_s_scroll(self, value):
+        """Включается/отключается виджет поля scroll в зависимости от значения от value."""
+        if value:
+            self.count_scroll.grid(column=23, row=1)
+            self.ent_scroll.grid(column=24, row=1)
+        else:
+            self.count_scroll.grid_forget()
+            self.ent_scroll.grid_forget()
+
 
     def on_off(self):
         """Включает или выключает виджеты в зависимости от значения с параметрами словаря all_commands"""
@@ -317,6 +332,8 @@ class Panel(Frame, KeepRefs):
                 self.panel_p_button(self.all_commands[command])
             elif command == "wait_time":
                 self.panel_w_time(self.all_commands[command])
+            elif command == "scroll":
+                self.panel_s_scroll(self.all_commands[command])
 
     def show_panel_widgets(self):
         """Панель всех виджетов модуля actions.py. По умолчанию все виджеты выключены, параметр - 0 """
@@ -329,7 +346,8 @@ class Panel(Frame, KeepRefs):
             interval=("interval", 0),
             write_text=("write_text", 0),
             button_press=("press_button", 0),
-            wait_time=("wait_time", 0)
+            wait_time=("wait_time", 0),
+            scroll=("scroll", 0)
             )
         self.on_off()
         self.focus()
@@ -403,7 +421,21 @@ class Panel(Frame, KeepRefs):
         self.on_off()
         self.focus()
 
+    def panel_scroll(self):
+        self.show_panel_widgets()
+        self.set_command(
+            x=("ent_x", 1),
+            y=("ent_y", 1),
+            scroll=("scroll", 1)
+        )
+        self.on_off()
+        self.focus()
+
     def refresh_panel(self):
+        """Метод вызывается при нажатии кнопки обновить,
+        при соответствующем выборе активируется панель
+        с необходимыми полями."""
+
         text = self.combo_action.get()
         if text == "Переместить курсор":
             self.panel_move_mouse()
@@ -417,6 +449,8 @@ class Panel(Frame, KeepRefs):
             self.panel_write_text()
         elif text == "Нажать клавишу":
             self.panel_press_button()
+        elif text == "Скролл":
+            self.panel_scroll()
         elif text == "Ждать":
             self.panel_wait_time()
         else:
@@ -484,6 +518,10 @@ class Panel(Frame, KeepRefs):
         self.lbl_wait_time = Label(self, text="Ожидание")
         self.ent_wait_time = Entry(self, width=2)
         self.ent_wait_time.insert(0, 1)
+
+        self.count_scroll = Label(self, text="Кол-во щелчков")
+        self.ent_scroll = Entry(self, width=2)
+        self.ent_scroll.insert(0, 0)
 
         self.focus()
 
