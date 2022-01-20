@@ -32,6 +32,7 @@ from subprocess import CalledProcessError
 from tkinter import Label, Tk, LEFT, BOTH, RAISED, Canvas, END, E, W, N, S, Checkbutton, IntVar
 from tkinter.ttk import Frame, Button, Style, Combobox, Entry
 from collections import defaultdict
+from turtle import pos
 from pyautogui import position, press
 import UI
 import weakref
@@ -88,6 +89,12 @@ class Panel(Frame, KeepRefs):
         "3": 3
     }
 
+    reverse_action_dict = {
+        'left': "Левая кнопка",
+        'middle': "Средняя кнопка",
+        'right': "Правая кнопка"
+    }
+
     buttons = [
         'enter', 'space', 'escape', ' ', '!', '"', '#', '$', '%', '&', "'", '(',
         ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7',
@@ -120,6 +127,9 @@ class Panel(Frame, KeepRefs):
         # print(self.count)
         # self.value = value
         self.state_delete = 0
+        self.screenshot_state = 0
+        self.save_data = {}
+
         self.x = 0
         self.y = 0
         self.duration = 0
@@ -127,10 +137,10 @@ class Panel(Frame, KeepRefs):
         self.clicks = 0
         self.interval = 0
         self.press_button = "enter"
-        self.write_text = ""
+        self.write_text = "Введите ваш текст"
         self.wait_time = 1
         self.scroll = 0
-        self.screenshot_state = 0
+
         self.initUI()
         self.bind("<KeyPress>", self.insert_coords)
         
@@ -429,7 +439,7 @@ class Panel(Frame, KeepRefs):
             scroll=("scroll", 1)
         )
         self.on_off()
-        self.focus()
+        self.focus()          
 
     def refresh_panel(self):
         """Метод вызывается при нажатии кнопки обновить,
@@ -455,6 +465,72 @@ class Panel(Frame, KeepRefs):
             self.panel_wait_time()
         else:
             pass
+
+    def save_datas(self):
+        text = self.combo_action.get()
+        self.get_values()
+
+        return {text: [self.x, self.y, self.duration, self.button, self.clicks, self.interval, self.write_text, self.press_button, self.wait_time, self.scroll]}
+
+    def load_panel(self, param):
+        """Метод вызывается при загрузке из файла,
+        при соответствующем выборе активируется панель
+        с необходимыми полями."""
+        text = param
+        action = [act for act in actions.Actions().all_actions]
+        self.combo_action.current(action.index(text))
+        if text == "Переместить курсор":
+            self.panel_move_mouse()
+        elif text == "Перетащить мышью":
+            self.panel_drag_mouse()
+        elif text == "Клик мыши":
+            self.panel_click_mouse()
+        elif text == "Двойной клик":
+            self.panel_doubleclick_mouse()
+        elif text == "Ввести текст":
+            self.panel_write_text()
+        elif text == "Нажать клавишу":
+            self.panel_press_button()
+        elif text == "Скролл":
+            self.panel_scroll()
+        elif text == "Ждать":
+            self.panel_wait_time()
+        else:
+            pass
+
+    def set_values(self, x=None, y=None, duration=None, button=None, clicks=None, interval=None, write_text=None, button_press=None, wait_time=None, scroll=None):
+        """
+        Устанавливаются значения для загрузки в поля, комбобоксы и др.
+        self.x = 0
+        self.y = 0
+        self.duration = 0
+        self.button = 'left'
+        self.clicks = 0
+        self.interval = 0
+        self.press_button = "enter"
+        self.write_text = ""
+        self.wait_time = 1
+        self.scroll = 0
+        везде и во всех списках порядок полей и переменных СТРОГО такой же!!!
+        """
+        total_list = [x, y, duration, button, clicks, interval, button_press, write_text, wait_time, scroll]
+        list_widget = [self.ent_x, self.ent_y, self.ent_duration, self.combo_buttons, self.combo_clicks, self.ent_interval, self.combo_press_button, self.ent_write_text, self.ent_wait_time, self.ent_scroll]
+        position = 0
+        for val in total_list:
+            if position == 3:
+                action = [act for act in self.reverse_action_dict.values()]
+                pos = self.reverse_action_dict[val]
+                self.combo_buttons.current(action.index(pos))
+                position += 1
+            elif position == 7:
+                if val:
+                    pos_button = self.buttons.index(val)
+                    self.combo_press_button.current(pos_button)
+                position += 1
+            else:
+                list_widget[position].delete(0, END)
+                list_widget[position].insert(0, val)
+                position += 1
 
     # def get_click(self, event):
     #     """Получение названия виджета при клике на кнопку удаления"""
