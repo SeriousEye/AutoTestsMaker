@@ -3,6 +3,7 @@
 class Actions():
 
     def __init__(self):
+        """При вызове класса инициализируются все действия."""
         self.all_actions = {
             "Переместить курсор": self.move_mouse(),
             "Перетащить мышью": self.drag_mouse(),
@@ -10,6 +11,7 @@ class Actions():
             "Двойной клик": self.doubleclick_mouse(),
             "Ввести текст": self.write_text(),
             "Нажать клавишу": self.press_button(),
+            "Скролл": self.scroll_mouse(),
             "Ждать": self.wait_time()
         }
 
@@ -46,6 +48,13 @@ class Actions():
         interval - пауза между нажатиями."""
 
         return f"pyautogui.click(x={x}, y={y}, button='{button}', interval={interval})\n"
+
+    def scroll_mouse(self, scroll=0, x=None, y=None):
+        """Скролл колесом мыши, вверх - положительное целое число,
+        вниз - отрицательное целое число. scroll - количество щелчков,
+        x и y перемещают курсор в позицию для скролла."""
+
+        return f"pyautogui.scroll({scroll}, x={x}, y={y})\n"
 
     def write_text(self, text="", interval=0.1):
         """Вводит тест поле с установленным курсором."""

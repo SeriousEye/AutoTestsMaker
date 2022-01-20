@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter.filedialog import asksaveasfilename
+from tkinter.filedialog import asksaveasfilename, askopenfilename
 from os import path
 from turtle import pos
 import actions
@@ -7,6 +7,7 @@ import show_screenshot as ss
 import screenshoter as scr
 import get_config as gc
 import action_buttons as ab
+import json
 
 
 
@@ -18,6 +19,7 @@ class Example(Frame):
     button_down = [0]
     screenshots = [0]
     delete_widgets = [0]
+    step_to_save = [0]
 
     def __init__(self, parent):
         Frame.__init__(self, parent)   
@@ -179,13 +181,14 @@ class Example(Frame):
     def save_file(self):
         """Выбор дериктории и задания названия файла для сохранения."""
         file_name = asksaveasfilename(
-            filetypes=(("Python files", "*.py"),
+            filetypes=(("Python file", "*.py"),
                        ("All files", "*.*")    
             )
         )
  
         # Выполняется сохранение файла, если не нажата кнопка отмена и задано имя файла   
         if file_name:
+            # print(path)
 
             with open(file_name, "w", encoding="utf-8")as wf:
                 text_import = actions.Actions().turn_on_lib()
@@ -203,21 +206,60 @@ class Example(Frame):
 
                     wf.write(act.get_action())
 
+    def save_schema(self):
+        filename = asksaveasfilename(
+            filetypes=(("json file", "*.json"),
+                       ("All files", "*.*")    
+            )
+        )
+        if filename:
+            # print(path.basename(filename))
+            for act in self.row_list[1:]:
+                step = act.save_datas()
+                self.step_to_save.append(step)
+            
+
+            with open(filename, "w", encoding="utf-8")as wf:
+                json.dump(self.step_to_save, wf)
+
+
+    def load_file(self):
+        filename = askopenfilename()
+        if filename:
+            with open(filename)as of:
+                temp = json.load(of)
+                for dic in temp[1:]:
+                    for key, val in dic.items():
+                        self.add_to_panel()
+                        pan = ab.Panel()
+                        pan.load_panel(key)
+                        # print(key, val)
+                        pan.set_values(x=val[0], y=val[1], duration=val[2], button=val[3], clicks=val[4], interval=val[5], button_press=val[6], write_text=val[7], wait_time=val[8], scroll=val[9])
+                        pan.grid(column=1, row=self.row_count, sticky=W)
+                        self.row_list.append(pan)
+                        self.row_count += 1
+
     def buttons(self):
         btn_add = Button(master=self.menu_frame, text="Добавить", command=self.add_panel)
         btn_add.grid(column=0, row=0)
 
-        btn_screenshot = Button(master=self.menu_frame, text="Скриншот", command=ss.main)
-        btn_screenshot.grid(column=1, row=0)
+        # btn_screenshot = Button(master=self.menu_frame, text="Скриншот", command=ss.main)
+        # btn_screenshot.grid(column=1, row=0)
 
-        btn_settings = Button(master=self.menu_frame, text="Настроить монитор", command=gc.getConfig().change_monitor_cfg())
-        btn_settings.grid(column=2, row=0)
+        # btn_settings = Button(master=self.menu_frame, text="Настроить монитор", command=gc.getConfig().change_monitor_cfg())
+        # btn_settings.grid(column=2, row=0)
 
-        btn_print = Button(master=self.menu_frame, text="Print", command=self.print_dict)
-        btn_print.grid(column=3, row=0)
+        # btn_print = Button(master=self.menu_frame, text="Print", command=self.print_dict)
+        # btn_print.grid(column=3, row=0)
 
-        btn_save = Button(master=self.menu_frame, text="Сохранить", command=self.save_file)
+        btn_save = Button(master=self.menu_frame, text="Сохранить тест", command=self.save_file)
         btn_save.grid(column=4, row=0)
+
+        btn_save_schema = Button(master=self.menu_frame, text="Сохранить схему", command=self.save_schema)
+        btn_save_schema.grid(column=5, row=0)
+
+        btn_load = Button(master=self.menu_frame, text="Загрузить схему", command=self.load_file)
+        btn_load.grid(column=6, row=0)
 
 
 # Нужно доработать отображение(удаление) панели оберки в виде кнопок вверх и вниз
@@ -233,11 +275,14 @@ class Example(Frame):
 #   - https://younglinux.info/tkinter/variable
 # READY 2.5 Допилить удаление кнопок вверх/вниз после удаления панели!!! 
 # 3. Добавить действий из puautogui https://pyautogui.readthedocs.io/en/latest/
-# 4. Нужно сделать возможность загрузки файла автотеста в программу, чтобы была возможность редактировать.
-#    Т.е.нужно навесить на каждый метод какой нибудь триггер(в котором сохраняются параметры панели) и сделать 
-#    сохранение шаблона(например в txt или xml) для последующей загрузки (КАК ВАРИАНТ, НАВЕСИТ НА МЕТОДЫ ТРИГГЕРЫ И СОХРАНЯТЬ В JSON СО ЗНАЧЕНИЯМИ)
+# READY 4. Нужно сделать возможность загрузки файла автотеста в программу, чтобы была возможность редактировать.
+# 4.5 Нужно чтобы дописывалось сохранение скриншота после выполнения действия, при установленном чек-боксе
 # 5. Написать мини-программу для последовательного запуска файлов автотестов с возможностью выбора стенда для запуска и сверки с эталонами 
-# 6. Рефакторинг/оптимизация кода и добавление комментов к методам.
+# 6. Сделать через декораторы или в самих методах, чтобы подсвечивалось поле или нельзя было ввести не валидное значение. https://pythonru.com/uroki/sozdanie-izmenenie-i-proverka-teksta-tkinter-2
+#    или обернуть в try/except, там где может быть ошибка. Или сделать так, чтобы кнопку Сохранить нельзя было нажать пока в поле 
+#    не валидное значение
+# 7. Сделать логирование (чтобы можно было отлавливать ошибки)
+# 8. Рефакторинг/оптимизация кода и добавление комментов к методам.
 
 
 
