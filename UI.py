@@ -1,7 +1,9 @@
 from tkinter import *
 from tkinter.filedialog import asksaveasfilename, askopenfilename
-from os import path
+from os import path, makedirs
 from turtle import pos
+# from PIL import ImageGrab
+# from functools import partial
 import actions
 import show_screenshot as ss
 import screenshoter as scr
@@ -20,6 +22,7 @@ class Example(Frame):
     screenshots = [0]
     delete_widgets = [0]
     step_to_save = [0]
+    screenshot_state = [0]
 
     def __init__(self, parent):
         Frame.__init__(self, parent)   
@@ -188,7 +191,10 @@ class Example(Frame):
  
         # Выполняется сохранение файла, если не нажата кнопка отмена и задано имя файла   
         if file_name:
-            # print(path)
+            # print(file_name)
+            # print(path.splitext(file_name)[0])
+            screenshot_folder = path.splitext(file_name)[0].replace('/', '\\')
+            makedirs(screenshot_folder)
 
             with open(file_name, "w", encoding="utf-8")as wf:
                 text_import = actions.Actions().turn_on_lib()
@@ -197,14 +203,29 @@ class Example(Frame):
                 for act in self.row_list[1:]:
                     screen = act.screenshot_state.get()
 
+                    wf.write(act.get_action())
+
                     """Если установлен флаг "скриншот", то делается снимок того экрана в которм находятся указанные координаты"""
                     if screen:
                         act.get_values()
                         filename = f"{act}".strip(".!")
-                        x, y = act.x, act.y
-                        scr.ScreenShot().screen_size(x, y, path, file_name, path.basename(filename))
+                        second_name = self.row_list.index(act)
+                        # x, y = act.x, act.y
+                        wx, hy = scr.ScreenShot().screen_resolution()
+                        half_screen = int(wx/2)
+                        left_region = (0, 0, 1920, 1080)
+                        right_region = (half_screen, 0, half_screen, hy)
+                        # print(act.choose_screen_state.get())
 
-                    wf.write(act.get_action())
+                        if act.choose_screen_state.split()[0] == 'Левый':
+                            # print(left_region)
+                            screen_resolution = actions.Actions().screenshot(region=left_region, name1=screenshot_folder, name2=f"Screen_step_{second_name}")
+                            wf.write(screen_resolution)
+                        elif act.choose_screen_state.split()[0] == 'Правый':
+                            # print(right_region)
+                            screen_resolution = actions.Actions().screenshot(region=right_region, name1=screenshot_folder, name2=f"Screen_step_{second_name}")
+                            wf.write(screen_resolution)
+                        # scr.ScreenShot().screen_size(x, y, path, file_name, path.basename(filename))
 
     def save_schema(self):
         filename = asksaveasfilename(
@@ -233,8 +254,19 @@ class Example(Frame):
                         self.add_to_panel()
                         pan = ab.Panel()
                         pan.load_panel(key)
-                        # print(key, val)
-                        pan.set_values(x=val[0], y=val[1], duration=val[2], button=val[3], clicks=val[4], interval=val[5], button_press=val[6], write_text=val[7], wait_time=val[8], scroll=val[9])
+                        pan.set_values(x=val[0], 
+                                       y=val[1],
+                                       duration=val[2],
+                                       button=val[3],
+                                       clicks=val[4],
+                                       interval=val[5],
+                                       button_press=val[6],
+                                       write_text=val[7],
+                                       wait_time=val[8],
+                                       scroll=val[9],
+                                       screenshot_state=val[10],
+                                       choose_screen_state=val[11])
+
                         pan.grid(column=1, row=self.row_count, sticky=W)
                         self.row_list.append(pan)
                         self.row_count += 1
@@ -281,6 +313,7 @@ class Example(Frame):
 # 6. Сделать через декораторы или в самих методах, чтобы подсвечивалось поле или нельзя было ввести не валидное значение. https://pythonru.com/uroki/sozdanie-izmenenie-i-proverka-teksta-tkinter-2
 #    или обернуть в try/except, там где может быть ошибка. Или сделать так, чтобы кнопку Сохранить нельзя было нажать пока в поле 
 #    не валидное значение
+# 6.5 Сделать полосу прокрутки для основного окна
 # 7. Сделать логирование (чтобы можно было отлавливать ошибки)
 # 8. Рефакторинг/оптимизация кода и добавление комментов к методам.
 
