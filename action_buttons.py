@@ -29,10 +29,11 @@
 #     main()
 
 from subprocess import CalledProcessError
-from tkinter import Label, Tk, LEFT, BOTH, RAISED, Canvas, END, E, W, N, S, Checkbutton, IntVar
+from tkinter import Label, StringVar, Tk, LEFT, BOTH, RAISED, Canvas, END, E, W, N, S, Checkbutton, IntVar
 from tkinter.ttk import Frame, Button, Style, Combobox, Entry
 from collections import defaultdict
 from turtle import pos
+from numpy import var
 from pyautogui import position, press
 import UI
 import weakref
@@ -127,7 +128,7 @@ class Panel(Frame, KeepRefs):
         # print(self.count)
         # self.value = value
         self.state_delete = 0
-        self.screenshot_state = 0
+        # self.screenshot_state = 0
         self.save_data = {}
 
         self.x = 0
@@ -140,6 +141,10 @@ class Panel(Frame, KeepRefs):
         self.write_text = "Введите ваш текст"
         self.wait_time = 1
         self.scroll = 0
+        self.screenshot_state = IntVar()
+        self.choose_screen_state = StringVar()
+
+        # self.choose_screen_var = 'Левый'
 
         self.initUI()
         self.bind("<KeyPress>", self.insert_coords)
@@ -226,17 +231,21 @@ class Panel(Frame, KeepRefs):
 
     def insert_coords(self, arg):
         """Помещаются координаты курсора в поля x и y"""
+        self.ent_x.configure(state="normal")
+        self.ent_y.configure(state="normal")
         self.ent_x.delete(0, END)
         self.ent_y.delete(0, END)
         x, y = self.get_coord()
         self.ent_x.insert(0, x)
         self.ent_y.insert(0, y)
+        self.ent_x.configure(state="disable")
+        self.ent_y.configure(state="disable")
 
     def panel_x(self, value):
         """Включается/отключается виджет поля x в зависимости от значения от value."""
         if value:
-            self.lbl_x.grid(column=6, row=1)
-            self.ent_x.grid(column=7, row=1)
+            self.lbl_x.grid(column=10, row=1)
+            self.ent_x.grid(column=11, row=1)
         else:
             self.lbl_x.grid_forget()
             self.ent_x.grid_forget()
@@ -244,8 +253,8 @@ class Panel(Frame, KeepRefs):
     def panel_y(self, value):
         """Включается/отключается виджет поля y в зависимости от значения от value."""
         if value:
-            self.lbl_y.grid(column=8, row=1)
-            self.ent_y.grid(column=9, row=1)
+            self.lbl_y.grid(column=12, row=1)
+            self.ent_y.grid(column=13, row=1)
         else:
             self.lbl_y.grid_forget()
             self.ent_y.grid_forget()
@@ -253,8 +262,8 @@ class Panel(Frame, KeepRefs):
     def panel_duration(self, value):
         """Включается/отключается виджет поля duration в зависимости от значения от value."""
         if value:
-            self.lbl_duration.grid(column=10, row=1)
-            self.ent_duration.grid(column=11, row=1)
+            self.lbl_duration.grid(column=14, row=1)
+            self.ent_duration.grid(column=15, row=1)
         else:
             self.lbl_duration.grid_forget()
             self.ent_duration.grid_forget()
@@ -262,8 +271,8 @@ class Panel(Frame, KeepRefs):
     def panel_button(self, value):
         """Включается/отключается виджет поля combo_buttons в зависимости от значения от value."""
         if value:
-            self.combo_buttons.grid(column=12, row=1)
-            self.combo_buttons.grid(column=13, row=1)
+            self.combo_buttons.grid(column=16, row=1)
+            self.combo_buttons.grid(column=17, row=1)
         else:
             self.combo_buttons.grid_forget()
             self.combo_buttons.grid_forget()
@@ -271,8 +280,8 @@ class Panel(Frame, KeepRefs):
     def panel_clicks(self, value):
         """Включается/отключается виджет поля clicks в зависимости от значения от value."""
         if value:
-            self.combo_clicks.grid(column=14, row=1)
-            self.combo_clicks.grid(column=15, row=1)
+            self.combo_clicks.grid(column=18, row=1)
+            self.combo_clicks.grid(column=19, row=1)
         else:
             self.combo_clicks.grid_forget()
             self.combo_clicks.grid_forget()
@@ -280,8 +289,8 @@ class Panel(Frame, KeepRefs):
     def panel_interval(self, value):
         """Включается/отключается виджет поля interval в зависимости от значения от value."""
         if value:
-            self.lbl_interval.grid(column=16, row=1)
-            self.ent_interval.grid(column=17, row=1)
+            self.lbl_interval.grid(column=20, row=1)
+            self.ent_interval.grid(column=21, row=1)
         else:
             self.lbl_interval.grid_forget()
             self.ent_interval.grid_forget()
@@ -289,15 +298,15 @@ class Panel(Frame, KeepRefs):
     def panel_w_text(self, value):
         """Включается/отключается виджет поля write_text в зависимости от значения от value."""
         if value:
-            self.ent_write_text.grid(column=18, row=1)
+            self.ent_write_text.grid(column=22, row=1)
         else:
             self.ent_write_text.grid_forget()
 
     def panel_p_button(self, value):
         """Включается/отключается виджет поля press_button в зависимости от значения от value."""
         if value:
-            self.lbl_press.grid(column=19, row=1)
-            self.combo_press_button.grid(column=20, row=1)
+            self.lbl_press.grid(column=23, row=1)
+            self.combo_press_button.grid(column=24, row=1)
         else:
             self.lbl_press.grid_forget()
             self.combo_press_button.grid_forget()
@@ -305,8 +314,8 @@ class Panel(Frame, KeepRefs):
     def panel_w_time(self, value):
         """Включается/отключается виджет поля wait_time в зависимости от значения от value."""
         if value:
-            self.lbl_wait_time.grid(column=21, row=1)
-            self.ent_wait_time.grid(column=22, row=1)
+            self.lbl_wait_time.grid(column=25, row=1)
+            self.ent_wait_time.grid(column=26, row=1)
         else:
             self.lbl_wait_time.grid_forget()
             self.ent_wait_time.grid_forget()
@@ -314,8 +323,8 @@ class Panel(Frame, KeepRefs):
     def panel_s_scroll(self, value):
         """Включается/отключается виджет поля scroll в зависимости от значения от value."""
         if value:
-            self.count_scroll.grid(column=23, row=1)
-            self.ent_scroll.grid(column=24, row=1)
+            self.count_scroll.grid(column=27, row=1)
+            self.ent_scroll.grid(column=28, row=1)
         else:
             self.count_scroll.grid_forget()
             self.ent_scroll.grid_forget()
@@ -446,6 +455,7 @@ class Panel(Frame, KeepRefs):
         при соответствующем выборе активируется панель
         с необходимыми полями."""
 
+        self.chkbtn_screen.configure(state="active")  # Делаем активным чекбокс скриншота
         text = self.combo_action.get()
         if text == "Переместить курсор":
             self.panel_move_mouse()
@@ -467,10 +477,24 @@ class Panel(Frame, KeepRefs):
             pass
 
     def save_datas(self):
+        """Возвращает словарь, где ключ - имя действия и значение - данные в полях."""
         text = self.combo_action.get()
         self.get_values()
 
-        return {text: [self.x, self.y, self.duration, self.button, self.clicks, self.interval, self.write_text, self.press_button, self.wait_time, self.scroll]}
+        return {text: [self.x,
+                       self.y,
+                       self.duration,
+                       self.button,
+                       self.clicks,
+                       self.interval,
+                       self.write_text,
+                       self.press_button,
+                       self.wait_time,
+                       self.scroll,
+                       self.screenshot_state.get(),
+                       self.choose_screen_state
+                       ]
+                }
 
     def load_panel(self, param):
         """Метод вызывается при загрузке из файла,
@@ -498,7 +522,7 @@ class Panel(Frame, KeepRefs):
         else:
             pass
 
-    def set_values(self, x=None, y=None, duration=None, button=None, clicks=None, interval=None, write_text=None, button_press=None, wait_time=None, scroll=None):
+    def set_values(self, x=None, y=None, duration=None, button=None, clicks=None, interval=None, write_text=None, button_press=None, wait_time=None, scroll=None, screenshot_state=None, choose_screen_state=None):
         """
         Устанавливаются значения для загрузки в поля, комбобоксы и др.
         self.x = 0
@@ -511,61 +535,121 @@ class Panel(Frame, KeepRefs):
         self.write_text = ""
         self.wait_time = 1
         self.scroll = 0
+        self.screenshot_state = IntVar()
+        self.choose_screen_state = StringVar()
         везде и во всех списках порядок полей и переменных СТРОГО такой же!!!
         """
-        total_list = [x, y, duration, button, clicks, interval, button_press, write_text, wait_time, scroll]
-        list_widget = [self.ent_x, self.ent_y, self.ent_duration, self.combo_buttons, self.combo_clicks, self.ent_interval, self.combo_press_button, self.ent_write_text, self.ent_wait_time, self.ent_scroll]
+        total_list = [x, y, duration, button, clicks, interval, button_press, write_text, wait_time, scroll, screenshot_state, choose_screen_state]
+
+        self.x = x
+        self.y = y
+        self.duration = duration
+        self.button = button
+        self.clicks = clicks
+        self.interval = interval
+        self.press_button = button_press
+        self.write_text = write_text
+        self.wait_time = wait_time
+        self.scroll = scroll
+        # self.screenshot_state = screenshot_state
+        self.choose_screen_state = choose_screen_state
+
+        list_widget = [self.ent_x,
+                       self.ent_y,
+                       self.ent_duration,
+                       self.combo_buttons,
+                       self.combo_clicks,
+                       self.ent_interval,
+                       self.combo_press_button,
+                       self.ent_write_text,
+                       self.ent_wait_time,
+                       self.ent_scroll,
+                       self.chkbtn_screen,
+                       self.combo_choose_screen
+                       ]
         position = 0
         for val in total_list:
-            if position == 3:
+
+            if position == 0 or position == 1:
+                self.ent_x.configure(state="normal")
+                self.ent_y.configure(state="normal")
+                list_widget[position].insert(0, val)
+                self.ent_x.configure(state="disable")
+                self.ent_y.configure(state="disable")
+                position += 1
+
+            elif position == 3:
                 action = [act for act in self.reverse_action_dict.values()]
                 pos = self.reverse_action_dict[val]
                 self.combo_buttons.current(action.index(pos))
                 position += 1
+            
             elif position == 7:
                 if val:
                     pos_button = self.buttons.index(val)
                     self.combo_press_button.current(pos_button)
                 position += 1
+
+            elif position == 10:
+                if val:
+                    self.chkbtn_screen.configure(state="normal")
+                    self.chkbtn_screen.select()
+                position += 1
+            elif position == 11 and total_list[position-1] == 1:
+                self.choose_screen()
+                screens = ['Левый экран', 'Правый экран']
+                self.combo_choose_screen.current(screens.index(val))
             else:
                 list_widget[position].delete(0, END)
                 list_widget[position].insert(0, val)
                 position += 1
+
+    def choose_screen(self):
+        if self.screenshot_state.get():
+            self.combo_choose_screen.grid(column=6, row=1)
+            # self.choose_screen_var = self.combo_choose_screen.get().split()
+        else:
+            self.combo_choose_screen.grid_forget()
 
     # def get_click(self, event):
     #     """Получение названия виджета при клике на кнопку удаления"""
     #     caller = event.widget
     #     print(caller)
  
-    def initUI(self):
-        # self.btn_delete = Button(self, text= "X", command=self.delete_panel, width=5)
-        # self.btn_delete.bind("<1>", self.get_click)
-        # self.btn_delete.grid(column=1, row=1)
-        
+    def initUI(self):        
         self.lbl_action = Label(self, text="Выберите действие")
         self.lbl_action.grid(column=2, row=1)
 
         self.combo_action = Combobox(self)
         self.combo_action['values'] = [act for act in actions.Actions().all_actions]
+        self.combo_action['state'] = 'readonly'
         self.combo_action.current(0)
         self.combo_action.grid(column=3, row=1)
 
         self.btn_refresh = Button(self, text="Обновить панель", command=self.refresh_panel)
         self.btn_refresh.grid(column=4, row=1)
 
-        self.screenshot_state = IntVar()
         self.chkbtn_screen = Checkbutton(self, text="Скриншот",
-                                 variable=self.screenshot_state)
+                                 variable=self.screenshot_state,
+                                 command=self.choose_screen)
+        self.chkbtn_screen.configure(state="disable")
         self.chkbtn_screen.grid(column=5, row=1)
+
+        self.combo_choose_screen = Combobox(self, textvariable=self.choose_screen_state)
+        self.combo_choose_screen['values'] = ['Левый экран', 'Правый экран']
+        self.combo_choose_screen['state'] = 'readonly'
+        self.combo_choose_screen.current(0)
 
         self.ent_write_text = Entry(self, width=40)
 
         self.lbl_x = Label(self, text="x:")
         self.ent_x = Entry(self, width=4)
+        self.ent_x.configure(state="disable")
         self.ent_x.insert(0, self.x)
 
         self.lbl_y = Label(self, text="y:")
         self.ent_y = Entry(self, width=4)
+        self.ent_y.configure(state="disable")
         self.ent_y.insert(0, self.y)
 
         self.lbl_duration = Label(self, text="Задержка")
