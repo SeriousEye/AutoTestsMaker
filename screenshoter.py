@@ -24,22 +24,30 @@ class ScreenShot():
         img = ImageGrab.grab((start_x, start_y, end_x, end_y))
         img.save("temp.png", "PNG")
 
-    def screen_size(self, value_x, value_y, path, name1, name2):
-        if value_x != 0 and value_y != 0:
-            ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
+    def screen_resolution(self):
+        ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
 
-            img = ImageGrab.grab()
-            wx, hy = img.size
-            half_screen = int(wx/2)
+        img = ImageGrab.grab()
+        wx, hy = img.size
 
-            if 0 <= int(value_x) < half_screen and 0 <= int(value_y) <= hy:
-                pyautogui.screenshot(f'{name1}_{name2}.png', region=(0, 0, half_screen, hy))
-                print("file left screen saved!")
-            elif half_screen <= int(value_x) < wx and 0 <= int(value_y) <= hy:
-                pyautogui.screenshot(f'{name1}_{name2}.png', region=(half_screen, 0, half_screen, hy))
-                print("file right screen saved!")
-        else:
-            pass
+        return wx, hy
+
+    # def screen_size(self, value_x, value_y, path, name1, name2):
+        # if value_x != 0 and value_y != 0:
+        #     ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
+
+        #     img = ImageGrab.grab()
+        #     wx, hy = img.size
+        #     half_screen = int(wx/2)
+
+        #     if 0 <= int(value_x) < half_screen and 0 <= int(value_y) <= hy:
+        #         pyautogui.screenshot(f'{name1}_{name2}.png', region=(0, 0, half_screen, hy))
+        #         print("file left screen saved!")
+        #     elif half_screen <= int(value_x) < wx and 0 <= int(value_y) <= hy:
+        #         pyautogui.screenshot(f'{name1}_{name2}.png', region=(half_screen, 0, half_screen, hy))
+        #         print("file right screen saved!")
+        # else:
+        #     pass
 
 
         # return (0, 0, half_screen, hy), (half_screen, 0, wx, hy)
