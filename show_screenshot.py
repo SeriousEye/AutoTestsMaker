@@ -20,7 +20,7 @@ class OpenScreen(Frame):
         self.initUI()
         self.process_movements()
 
-    def quit(self, arg1):
+    def quit(self, event):
         self.parent.destroy()
         self.parent.update()
 
