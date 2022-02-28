@@ -1,4 +1,4 @@
-
+from os import path
 
 class Actions():
 
@@ -18,7 +18,7 @@ class Actions():
     def turn_on_lib(self):
         """Подключается библиотека Pyautogui и time с методом sleep."""
 
-        return "from time import sleep\nimport pyautogui\n\n"
+        return "from PIL import ImageGrab\nfrom functools import partial\nfrom time import sleep\nimport pyautogui\n\n"
 
 
     def move_mouse(self, x=0, y=0, duration=0.1):
@@ -70,6 +70,29 @@ class Actions():
         """Инициирует ожидание."""
 
         return f"sleep({wait})\n"
+
+    def screenshot(self, region=(0, 0, 0, 0), name1="", name2=""):
+        "Делает скриншот области экрана."
+
+        x1, y1, x2, y2 = region
+        
+
+        wx, hy = x2, y2
+        # half_screen = int(wx/2)
+        path_to_screen = path.join(name1, name2).replace("\\", r"\\")
+
+        # if 0 <= int(x1) < half_screen and 0 <= int(y1) <= hy:
+        if x1 == 0 and y1 == 0:
+            return f"""ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)\npyautogui.screenshot("{path_to_screen}.png", region=(0, 0, {x2}, {y2}))\n"""
+            # pyautogui.screenshot(f'{name1}_{name2}.png', region=(0, 0, half_screen, hy))
+            # print("file left screen saved!")
+        # elif half_screen <= int(x1) < wx and 0 <= int(y1) <= hy:
+        else:
+            return f"""ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)\npyautogui.screenshot("{path_to_screen}.png", region=({x1}, 0, {x2}, {y2}))\n"""
+            # pyautogui.screenshot(f'{name1}_{name2}.png', region=(half_screen, 0, half_screen, hy))
+            # print("file right screen saved!")
+
+        
 
 
 
