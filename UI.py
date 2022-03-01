@@ -1,6 +1,7 @@
+import re
 from tkinter import *
 from tkinter.filedialog import asksaveasfilename, askopenfilename
-from os import path, makedirs
+from os import path, makedirs, listdir, remove, rmdir
 from turtle import pos
 # from PIL import ImageGrab
 # from functools import partial
@@ -188,13 +189,21 @@ class Example(Frame):
                        ("All files", "*.*")    
             )
         )
- 
         # Выполняется сохранение файла, если не нажата кнопка отмена и задано имя файла   
         if file_name:
-            # print(file_name)
-            # print(path.splitext(file_name)[0])
+
+            path_name = file_name.replace('/', '\\') if '/' in file_name else file_name
+
+            all_files = listdir(path.split(path_name)[0])
+            # all_files = path.join(path.abspath(path.dirname(__file__)), "starter.py")
+            # print(all_files)
+            if path.split(path_name)[1] in all_files:
+                remove(path_name)
+                rmdir(path.splitext(path_name)[0])
+            
             screenshot_folder = path.splitext(file_name)[0].replace('/', '\\')
             makedirs(screenshot_folder)
+
 
             with open(file_name, "w", encoding="utf-8")as wf:
                 text_import = actions.Actions().turn_on_lib()
@@ -210,19 +219,15 @@ class Example(Frame):
                         act.get_values()
                         filename = f"{act}".strip(".!")
                         second_name = self.row_list.index(act)
-                        # x, y = act.x, act.y
                         wx, hy = scr.ScreenShot().screen_resolution()
                         half_screen = int(wx/2)
                         left_region = (0, 0, 1920, 1080)
                         right_region = (half_screen, 0, half_screen, hy)
-                        # print(act.choose_screen_state.get())
 
                         if act.choose_screen_state.split()[0] == 'Левый':
-                            # print(left_region)
                             screen_resolution = actions.Actions().screenshot(region=left_region, name1=screenshot_folder, name2=f"Screen_step_{second_name}")
                             wf.write(screen_resolution)
                         elif act.choose_screen_state.split()[0] == 'Правый':
-                            # print(right_region)
                             screen_resolution = actions.Actions().screenshot(region=right_region, name1=screenshot_folder, name2=f"Screen_step_{second_name}")
                             wf.write(screen_resolution)
                         # scr.ScreenShot().screen_size(x, y, path, file_name, path.basename(filename))
@@ -308,7 +313,7 @@ class Example(Frame):
 # READY 2.5 Допилить удаление кнопок вверх/вниз после удаления панели!!! 
 # 3. Добавить действий из puautogui https://pyautogui.readthedocs.io/en/latest/
 # READY 4. Нужно сделать возможность загрузки файла автотеста в программу, чтобы была возможность редактировать.
-# 4.5 Нужно чтобы дописывалось сохранение скриншота после выполнения действия, при установленном чек-боксе
+# READY 4.5 Нужно чтобы дописывалось сохранение скриншота после выполнения действия, при установленном чек-боксе
 # 5. Написать мини-программу для последовательного запуска файлов автотестов с возможностью выбора стенда для запуска и сверки с эталонами 
 # 6. Сделать через декораторы или в самих методах, чтобы подсвечивалось поле или нельзя было ввести не валидное значение. https://pythonru.com/uroki/sozdanie-izmenenie-i-proverka-teksta-tkinter-2
 #    или обернуть в try/except, там где может быть ошибка. Или сделать так, чтобы кнопку Сохранить нельзя было нажать пока в поле 
