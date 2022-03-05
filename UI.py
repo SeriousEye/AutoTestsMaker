@@ -195,8 +195,6 @@ class Example(Frame):
             path_name = file_name.replace('/', '\\') if '/' in file_name else file_name
 
             all_files = listdir(path.split(path_name)[0])
-            # all_files = path.join(path.abspath(path.dirname(__file__)), "starter.py")
-            # print(all_files)
             if path.split(path_name)[1] in all_files:
                 remove(path_name)
                 rmdir(path.splitext(path_name)[0])
@@ -224,10 +222,10 @@ class Example(Frame):
                         left_region = (0, 0, 1920, 1080)
                         right_region = (half_screen, 0, half_screen, hy)
 
-                        if act.choose_screen_state.split()[0] == 'Левый':
+                        if act.choose_screen_state == 'Левый экран':
                             screen_resolution = actions.Actions().screenshot(region=left_region, name1=screenshot_folder, name2=f"Screen_step_{second_name}")
                             wf.write(screen_resolution)
-                        elif act.choose_screen_state.split()[0] == 'Правый':
+                        elif act.choose_screen_state == 'Правый экран':
                             screen_resolution = actions.Actions().screenshot(region=right_region, name1=screenshot_folder, name2=f"Screen_step_{second_name}")
                             wf.write(screen_resolution)
                         # scr.ScreenShot().screen_size(x, y, path, file_name, path.basename(filename))
@@ -243,7 +241,8 @@ class Example(Frame):
             for act in self.row_list[1:]:
                 step = act.save_datas()
                 self.step_to_save.append(step)
-            
+
+            print(self.step_to_save)
 
             with open(filename, "w", encoding="utf-8")as wf:
                 json.dump(self.step_to_save, wf)
