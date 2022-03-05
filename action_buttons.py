@@ -142,7 +142,7 @@ class Panel(Frame, KeepRefs):
         self.wait_time = 1
         self.scroll = 0
         self.screenshot_state = IntVar()
-        self.choose_screen_state = StringVar()
+        self.choose_screen_state = 'Левый экран'
 
         # self.choose_screen_var = 'Левый'
 
@@ -210,6 +210,7 @@ class Panel(Frame, KeepRefs):
         self.press_button = self.combo_press_button.get()
         self.wait_time = self.ent_wait_time.get()
         self.scroll = self.ent_scroll.get()
+        self.choose_screen_state = self.combo_choose_screen.get()
 
     def set_command(self, x=None, y=None, duration=None, button=None, clicks=None, interval=None, write_text=None, button_press=None, wait_time=None, scroll=None):
         """
@@ -585,9 +586,11 @@ class Panel(Frame, KeepRefs):
                 position += 1
             
             elif position == 7:
-                if val:
+                if val and val in self.buttons:
                     pos_button = self.buttons.index(val)
                     self.combo_press_button.current(pos_button)
+                else:
+                    self.combo_press_button.current(0)
                 position += 1
 
             elif position == 10:
