@@ -237,12 +237,14 @@ class Example(Frame):
             )
         )
         if filename:
+            self.step_to_save.clear()
+            self.step_to_save.append(0)
             # print(path.basename(filename))
             for act in self.row_list[1:]:
                 step = act.save_datas()
                 self.step_to_save.append(step)
 
-            print(self.step_to_save)
+            # print(self.step_to_save)
 
             with open(filename, "w", encoding="utf-8")as wf:
                 json.dump(self.step_to_save, wf)
