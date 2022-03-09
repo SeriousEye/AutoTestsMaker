@@ -488,8 +488,8 @@ class Panel(Frame, KeepRefs):
                        self.button,
                        self.clicks,
                        self.interval,
-                       self.write_text,
                        self.press_button,
+                       self.write_text,
                        self.wait_time,
                        self.scroll,
                        self.screenshot_state.get(),
@@ -570,6 +570,7 @@ class Panel(Frame, KeepRefs):
                        ]
         position = 0
         for val in total_list:
+            # print(f"position - {position}, val - {val}")
 
             if position == 0 or position == 1:
                 self.ent_x.configure(state="normal")
@@ -585,12 +586,18 @@ class Panel(Frame, KeepRefs):
                 self.combo_buttons.current(action.index(pos))
                 position += 1
             
-            elif position == 7:
+            elif position == 6:
                 if val and val in self.buttons:
                     pos_button = self.buttons.index(val)
                     self.combo_press_button.current(pos_button)
                 else:
                     self.combo_press_button.current(0)
+                position += 1
+            
+            elif position == 7:
+                # print(val)
+                if val:
+                    self.ent_write_text.insert(0, val)
                 position += 1
 
             elif position == 10:
